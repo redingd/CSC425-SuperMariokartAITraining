@@ -7,7 +7,11 @@ The goal of this project is to train an AI program how to play the game Super Ma
 
 # EXTERNAL RESOURCES
 Base code is copied from https://github.com/PWhiddy/PokemonRedExperiments.git
+
 A legally obtained ROM of Super Mariokart for the SNES
-The SNES9x emulator is used to run the game 
+
+The SNES9x emulator is used to run the game
+
   Emulator download link: https://www.emulator-zone.com/snes/snes9x
+  
 stanley.ec02.pdf is also used as a research resource
