@@ -12,6 +12,8 @@ set(SNES9X_SOURCES
     memmap.cpp      #Memory and Address
     controls.cpp    #Player(AI) Inputs
     gfx.cpp         #Graphics Output
+    dsp.cpp         #Needed for Super MarioKart
+    dsp1.cpp        #Also Needed
 )
 
 
