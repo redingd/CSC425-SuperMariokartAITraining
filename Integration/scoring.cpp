@@ -2,19 +2,20 @@
 
 using namespace std;
 
+namespace scoring {
 
-    void scoring::collectedCoin() {
+    /*void scoring::collectedCoin() {
         score += 2;
-    }
+    }*/
     void scoring::lostCoin() {
         score -= 1;
     }
-    void scoring::pickedItem() {
+    /*void scoring::pickedItem() {
         score += 1;
     }
     void scoring::usedItem() {
         score += 1;
-    }
+    }*/
     void scoring::hitByItem() {
         score -= 2;
     }
@@ -28,3 +29,5 @@ using namespace std;
     void scoring::completedLap(int place) {
         score += (10 - place) * 3;
     }
+
+}

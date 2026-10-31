@@ -2,10 +2,9 @@
 
 using namespace std;
 
-class scoring {
+namespace scoring {
 
-    public:
-    int score;
+    int score = 0;
 
     //void collectedCoin();
     void lostCoin();
