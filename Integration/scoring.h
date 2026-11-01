@@ -4,7 +4,7 @@ using namespace std;
 
 namespace scoring {
 
-    int score = 0;
+    inline int score = 0;
 
     //void collectedCoin();
     void lostCoin();
