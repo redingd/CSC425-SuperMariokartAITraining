@@ -20,5 +20,7 @@ Google Gemini chatbot was used to help plan the project; we used it to lay out s
 All contents of the Base Code folder are taken from https://github.com/PWhiddy/PokemonRedExperiments.git ; This folder (and the project it's taken from) is used as inspiration for how we plan to build our own repository for our project.
 
 Further information on how the above project runs and was made can be found here: https://youtu.be/DcYLT37ImBY?si=DxQH7USIPTWupoFl
-  
+
+Another project that trains a PPO agent to play Super Mariokart, written in Python instead of C++, was used as a reference. The repository of that project can be found here: https://github.com/arvganesh/super-mario-kart-ppo.git
+
 stanley.ec02.pdf is also used as a research resource.
