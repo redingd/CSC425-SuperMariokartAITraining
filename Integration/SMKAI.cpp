@@ -8,6 +8,7 @@
 
 #include "../snes9x.h"
 #include "../memmap.h"
+#include "../controls.h"
 #include "scoring.h"
 #include "mutate.h"
 #include "buttons.h"
@@ -18,7 +19,6 @@
 #include <cstdlib> //Gemini aided line
 #include <limits> //Gemini
 
-using namespace std;
 
 // Provide the mandatory stubs Snes9x demands
 bool S9xOpenSoundDevice(void) {
@@ -30,41 +30,96 @@ extern "C" HRESULT WINAPI DXTraceW(const char* strFile, DWORD dwLine, HRESULT hr
 
 int main() {
 
-    cout << "Program Started!" << endl;
+    std::cout << "Program Started!" << std::endl;
 
     double tempRate;
-    cout << endl << "Please enter in decimal form the mutation rate: ";
-    cin >> tempRate;
+    std::cout << std::endl << "Please enter in decimal form the mutation rate: ";
+    std::cin >> tempRate;
     mutate::setMutate(tempRate);
     
     
     // 1. Initialize Snes9x memory
     if (Memory.Init()) {
-        cout << "SNES Memory Initialized Successfully!\n";
+        std::cout << "SNES Memory Initialized Successfully!\n";
     }
     else {
-        cout << "Failed to initialize memory.\n";
+        std::cout << "Failed to initialize memory.\n";
         return -1;
     } //Gemini
 
-    cin.clear(); //Gemini
-    cin.ignore((numeric_limits<streamsize>::max)(), '\n'); //Gemini
+    std::cin.clear(); //Gemini
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n'); //Gemini
 
-    string rompath;
-    cout << endl << "Enter the file path of the rom here:" << endl;
-    getline(cin, rompath);
+    std::string rompath;
+    std::cout << std::endl << "Enter the file path of the rom here:" << std::endl;
+    getline(std::cin, rompath);
       
     // 1.5. Load the ROM file
     if (!Memory.LoadROM(rompath.c_str())) {
-        cout << "Failed to load ROM: " << rompath << "\n";
+        std::cout << "Failed to load ROM: " << rompath << "\n";
         return -1;
     } //Gemini
-    cout << "ROM Loaded Successfully!\n";
+    std::cout << "ROM Loaded Successfully!\n";
     
     // 2. Reset the emulator core
     S9xReset();
-    cout << "SNES Core Reset Successfully!\n";
+    std::cout << "SNES Core Reset Successfully!\n";
     //Gemini
+
+
+    //Check User is Ready
+    std::string ready;
+    std::cout << std::endl << "Are you ready to run: (y) (case sensative) (quits otherwise):" << std::endl;
+    std::cin >> ready;
+    if (ready != "y") {
+        std::cout << std::endl << "User Quit" << std::endl;
+        return 0;
+    }
+
+
+
+    std::cout << std::endl << "Begin Emulation" << std::endl;
+
+    //Begin Emulation!!!
+    S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0); //Gemini
+    bool run = true;
+    int buttonSelection;
+    unsigned int pressing;
+    while (run) {
+        if (mutate::mutation()) {
+            buttonSelection = mutate::pressThis();
+        }
+        else {
+            //Will be where AI code is called
+            //For now just B to demonstrate usability
+            buttonSelection = 0;
+        }
+        pressing = buttons::intToButton(buttonSelection);
+        
+        //Gemini -
+        // Build the command structure for Player 1
+        s9xcommand_t cmd;
+        cmd.type = S9xButtonJoypad;
+        cmd.multi_press = 0;
+        cmd.button_norpt = 0;
+        cmd.button.joypad.idx = 0;        // Player 1
+        cmd.button.joypad.toggle = 0;
+        cmd.button.joypad.turbo = 0;
+        cmd.button.joypad.sticky = 0;
+        cmd.button.joypad.buttons = pressing; //Partial Gemini, Partial Coder
+
+        // Apply command (data1 = 1 if buttons are pressed, 0 if released/none)
+        S9xApplyCommand(cmd, pressing != 0 ? 1 : 0, 0);
+
+        // Run a single frame of the emulator
+        S9xMainLoop();
+        //- Gemini
+
+        //Will need to implement a way to safely user exist the while loop once starting to implement AI
+        
+    }
+
+
 
     return 0;
 
