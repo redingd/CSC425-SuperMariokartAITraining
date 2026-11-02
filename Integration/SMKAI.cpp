@@ -53,6 +53,9 @@ int main() {
     std::string rompath;
     std::cout << std::endl << "Enter the file path of the rom here:" << std::endl;
     getline(std::cin, rompath);
+    if (rompath.front() == '\"' && rompath.back() == '\"') {
+        rompath = rompath.substr(1, rompath.size() - 2);
+    } //Remove " from beginning and end of copied file path if that's in the paste for some reason
       
     // 1.5. Load the ROM file
     if (!Memory.LoadROM(rompath.c_str())) {
@@ -75,6 +78,12 @@ int main() {
         std::cout << std::endl << "User Quit" << std::endl;
         return 0;
     }
+
+    
+    std::string showAI;
+    std::cout << std::endl << "Would you like to watch the AI race? (y) (case sensative):" << std::endl;
+    std::cin >> showAI;
+    bool showGameplay = (showAI == "y");
 
 
 
