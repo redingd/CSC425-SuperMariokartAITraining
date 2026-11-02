@@ -1,6 +1,5 @@
 #pragma once //IMPORTANT TO NOT KEEP REDEFINING HEADER
 
-using namespace std;
 
 namespace scoring {
 

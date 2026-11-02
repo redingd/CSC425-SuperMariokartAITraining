@@ -4,7 +4,6 @@
 #include<random>
 #include<ctime>
 
-using namespace std;
 
 //Gemini aid is namespace mutate and inline
 namespace mutate {
@@ -18,8 +17,8 @@ namespace mutate {
     0.5 for most the time when training
     0 for letting it go and do its own best
     */
-    inline mt19937 randomGenerator{(unsigned int)time(0)};
-    inline uniform_real_distribution<double> randomRange{0.0, 1.0};
+    inline std::mt19937 randomGenerator{(unsigned int)time(0)};
+    inline std::uniform_real_distribution<double> randomRange{0.0, 1.0};
 
 
     void setMutate(double);
