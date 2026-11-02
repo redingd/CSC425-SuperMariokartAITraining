@@ -10,6 +10,7 @@
 #include "../memmap.h"
 #include "scoring.h"
 #include "mutate.h"
+#include "buttons.h"
 
 #include <iostream>
 #include <string>
