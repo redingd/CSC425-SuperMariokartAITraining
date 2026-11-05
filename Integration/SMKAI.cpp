@@ -14,7 +14,6 @@
 //- Gemini
 
 #include "libretroAccess.h"
-#include "scoring.h"
 #include "mutate.h"
 #include "buttons.h"
 
@@ -203,7 +202,7 @@ int main() {
 
         // Periodic logging and score tracking check
         if (frameCount % 100 == 0) {
-            std::cout << "Frames executed: " << frameCount << " | Current Score: " << scoring::score << "\n"; //Current Score added by Gemini
+            std::cout << "Frames executed: " << frameCount << " | Current Score: " << /*score*/ 0 << "\n"; //Current Score added by Gemini
         }
 
         // Only pace to 60 FPS if the user is watching the visual window

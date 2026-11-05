@@ -36,41 +36,41 @@ namespace buttons {
         case 8: // Press B and Left Trigger
             return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_L);
 
-        case 9: // Press Right Trigger, Hop
-            return (1 << RETRO_DEVICE_ID_JOYPAD_R);
-
-        case 10: // Press B and Right Trigger
-            return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_R);
-
-        case 11: // Press B, Left Trigger, Right Trigger, Power Slide
+        case 9: // Press B, Left Trigger, Right Trigger, Power Slide
             return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_L) | (1 << RETRO_DEVICE_ID_JOYPAD_R);
 
-        case 12: // Press B, Left Trigger, Right Trigger, Left dPad
+        case 10: // Press B, Left Trigger, Right Trigger, Left dPad
             return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_L) | (1 << RETRO_DEVICE_ID_JOYPAD_R) | (1 << RETRO_DEVICE_ID_JOYPAD_LEFT);
 
-        case 13: // Press B, Left Trigger, Right Trigger, Right dPad
+        case 11: // Press B, Left Trigger, Right Trigger, Right dPad
             return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_L) | (1 << RETRO_DEVICE_ID_JOYPAD_R) | (1 << RETRO_DEVICE_ID_JOYPAD_RIGHT);
 
-        case 14: // Press Y, Brake/Backwards
+        case 12: // Press Y, Brake/Backwards
             return (1 << RETRO_DEVICE_ID_JOYPAD_Y);
 
-        case 15: // Press Y and Left dPad
+        case 13: // Press Y and Left dPad
             return (1 << RETRO_DEVICE_ID_JOYPAD_Y) | (1 << RETRO_DEVICE_ID_JOYPAD_LEFT);
 
-        case 16: // Press Y and Right dPad
+        case 14: // Press Y and Right dPad
             return (1 << RETRO_DEVICE_ID_JOYPAD_Y) | (1 << RETRO_DEVICE_ID_JOYPAD_RIGHT);
 
-        case 17: // Press Y and A
+        case 15: // Press Y and A
             return (1 << RETRO_DEVICE_ID_JOYPAD_Y) | (1 << RETRO_DEVICE_ID_JOYPAD_A);
 
-        case 18: // Press Y and X
+        case 16: // Press Y and X
             return (1 << RETRO_DEVICE_ID_JOYPAD_Y) | (1 << RETRO_DEVICE_ID_JOYPAD_X);
 
-        case 19: // Press Y and Left Trigger
-            return (1 << RETRO_DEVICE_ID_JOYPAD_Y) | (1 << RETRO_DEVICE_ID_JOYPAD_L);
+        case 17: // Press B and Left dPad
+            return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_LEFT);
 
-        case 20: // Press Y and Right Trigger
-            return (1 << RETRO_DEVICE_ID_JOYPAD_Y) | (1 << RETRO_DEVICE_ID_JOYPAD_R);
+        case 18: // Press B and Right dPad
+            return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_RIGHT);
+
+        case 19: // Press B and Left dPad
+            return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_LEFT);
+
+        case 20: // Press B and Right dPad
+            return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_RIGHT);
 
         case 21: // No press
             return 0;
