@@ -1,0 +1,1 @@
+These files are from the snes9x github, and have been updated/changed to work with this project.
