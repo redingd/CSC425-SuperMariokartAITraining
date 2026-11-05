@@ -18,8 +18,6 @@
 #include "mutate.h"
 #include "buttons.h"
 
-#include "../libretro/libretro.h"
-
 
 int main() {
     std::cout << "Program Started!" << std::endl;
@@ -50,6 +48,18 @@ int main() {
     std::cout << std::endl << "Would you like to watch the AI race? (y) (case sensitive):" << std::endl;
     std::cin >> showAI;
     bool showGameplay = (showAI == "y"); // (Can be used later if you hook up video rendering)
+
+    int watchSpeed = 1;
+    if (showGameplay) {
+        std::cout << std::endl << "Speed Options For Viewing:" << std::endl <<
+            "Half Speed (0)" << std::endl <<
+            "Normal Speed (1)" << std::endl <<
+            "Double Speed (2)" << std::endl <<
+            "Triple Speed (3)" << std::endl <<
+            "Quadruple Speed (4)" << std::endl <<
+            "Please enter your selection (int): ";
+        std::cin >> watchSpeed;
+    }
 
     //Gemini -
     // NEW: Initialize video window if requested ---
@@ -108,9 +118,48 @@ int main() {
     int frameCount = 0;
     int buttonSelection = 0;
 
+    /*
+    FYI lower number for targetFPS is faster running
+    As seen below Gemini says 60FPSish is 16639ish
+    This means half speed is about 33278
+    And double speed is about 8320
+    Meaning quadruple is 4160
+    */
+    int targetFPS = 0;
+    switch (watchSpeed) {
+
+    case 0:
+        targetFPS = 33278;
+        break;
+
+    case 1:
+        targetFPS = 16639;
+        break;
+
+    case 2:
+        targetFPS = 8320;
+        break;
+
+    case 3:
+        targetFPS = 5547;
+        break;
+
+    case 4:
+        targetFPS = 4160;
+        break;
+
+    case 5:
+        targetFPS = 3328;
+        break;
+
+    default:
+        targetFPS = 16639;
+        break;
+    }
+
     //Gemini -
     // Target ~60.09 FPS for SNES (approx. 16,639 microseconds per frame)
-    const auto frameDuration = std::chrono::microseconds(16639);
+    const auto frameDuration = std::chrono::microseconds(targetFPS);
     auto nextFrameTime = std::chrono::steady_clock::now() + frameDuration;
     //- Gemini
 
@@ -126,8 +175,13 @@ int main() {
             }
         } //- Gemini
 
-        if (frameCount < 500) {
-            buttonSelection = (1 << RETRO_DEVICE_ID_JOYPAD_B);
+        if (frameCount < 800) { //Startup Race
+            if (frameCount % 30 == 0) {
+                buttonSelection = 0;
+            }
+            else {
+                buttonSelection = 21;
+            }
         }
         else if (mutate::mutation()) {
             buttonSelection = mutate::pressThis();
