@@ -18,6 +18,8 @@
 #include "mutate.h"
 #include "buttons.h"
 
+#include "../libretro/libretro.h"
+
 
 int main() {
     std::cout << "Program Started!" << std::endl;
@@ -124,10 +126,8 @@ int main() {
             }
         } //- Gemini
 
-        /*
-        if (frameCount < 150) {
-            // Force press 'START' for the first 150 frames to boot past title screen
-            buttonSelection = 8;
+        if (frameCount < 500) {
+            buttonSelection = (1 << RETRO_DEVICE_ID_JOYPAD_B);
         }
         else if (mutate::mutation()) {
             buttonSelection = mutate::pressThis();
@@ -136,13 +136,10 @@ int main() {
             // Future AI policy output here
             buttonSelection = 0;
         }
-        */
 
         //Gemini -
         // Update the button state that libretroAccess will query on the next frame
-        //current_buttons = buttons::intToButton(buttonSelection);
-
-        current_buttons = (1 << 3);
+        current_buttons = buttons::intToButton(buttonSelection);
 
         // Advance emulator by exactly one frame (single-threaded & deterministic)
         snes.RunFrame();
