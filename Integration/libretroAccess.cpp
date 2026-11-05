@@ -18,6 +18,8 @@ extern "C" {
     void retro_set_audio_sample_batch(retro_audio_sample_batch_t);
     void retro_set_input_poll(retro_input_poll_t);
     void retro_set_input_state(retro_input_state_t);
+    void retro_set_controller_port_device(unsigned port, unsigned device);
+    void retro_get_system_av_info(struct retro_system_av_info* info);
 }
 
 libretroAccess* libretroAccess::instance = nullptr;
@@ -27,6 +29,12 @@ libretroAccess::libretroAccess() {
 }
 
 libretroAccess::~libretroAccess() {
+    // Clean up SDL resources if they were initialized
+    if (texture) SDL_DestroyTexture(texture);
+    if (renderer) SDL_DestroyRenderer(renderer);
+    if (window) SDL_DestroyWindow(window);
+    SDL_Quit();
+
     retro_deinit();
     if (instance == this) instance = nullptr;
 }
@@ -37,16 +45,42 @@ bool libretroAccess::env_cb(unsigned cmd, void* data) {
         if (data) *(bool*)data = true;
         return true;
 
-    case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
-        // Snes9x tells you what pixel format it wants (e.g., 0x1 for RGB565, 0x0 for XRGB8888)
-        // You can accept it by returning true.
+    case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT: {
+        if (data) {
+            enum retro_pixel_format* pix_fmt = (enum retro_pixel_format*)data;
+            std::cout << "[DEBUG] Core requested pixel format: " << *pix_fmt << " (Setting to XRGB8888 = 0)\n";
+            *pix_fmt = RETRO_PIXEL_FORMAT_XRGB8888;
+            return true;
+        }
+        return false;
+    }
+
+    case RETRO_ENVIRONMENT_GET_OVERSCAN:
+        if (data) *(bool*)data = false;
         return true;
+
+    case RETRO_ENVIRONMENT_GET_VARIABLE: {
+        struct retro_variable* var = (struct retro_variable*)data;
+        if (var && var->key) {
+            std::string key(var->key);
+
+            if (key.rfind("snes9x_layer_", 0) == 0 ||
+                key == "snes9x_gfx_clip" ||
+                key == "snes9x_gfx_transp" ||
+                key == "snes9x_hires_blend") {
+                // Must be a persistent static string pointer
+                static const char* enabled_str = "enabled";
+                var->value = enabled_str;
+                return true;
+            }
+        }
+        return false;
+    }
 
     case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
     case RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
     case RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY: {
         // Cores often query this to know where to save SRAM or config files.
-        // Returning false or providing a dummy current-directory path prevents crashes.
         if (data) {
             // Point it to a safe string like current directory "."
             *(const char**)data = ".";
@@ -54,20 +88,83 @@ bool libretroAccess::env_cb(unsigned cmd, void* data) {
         return true;
     }
 
-    case RETRO_ENVIRONMENT_GET_VARIABLE:
-        // If the core asks for core options/variables and you don't supply them, 
-        // returning false lets the core fall back to its defaults gracefully.
-        return false;
+    case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
+        // The core reports its performance requirements; we acknowledge it happily.
+        return true;
+
+    case RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
+        // Confirm that both audio and video subsystems are active and enabled
+        if (data) *(int*)data = (1 << 0) | (1 << 1); // Enable both Audio (bit 0) and Video (bit 1)
+        return true;
 
     default:
-        // Log unhandled commands during debugging if needed, but return false or true safely
+        // Log unhandled commands during debugging if needed, but return false safely
         return false;
     }
 }
 
-void libretroAccess::video_cb(const void*, unsigned, unsigned, size_t) {}
+void libretroAccess::video_cb(const void* data, unsigned width, unsigned height, size_t pitch) {
+    // If video wasn't initialized (running headlessly), or data is missing, skip rendering
+    if (!data || !instance || !instance->renderer || !instance->texture) {
+        std::cout << "[DEBUG] video_cb skipped (null pointer)!\n";
+        return;
+    }
+
+    // Diagnostic: Scan the first few rows to see if there's *any* non-zero data
+    const uint32_t* pixels = static_cast<const uint32_t*>(data);
+    int nonZeroCount = 0;
+    uint32_t samplePixel = 0;
+
+    for (int i = 0; i < (int)(width * height); i++) {
+        if (pixels[i] != 0) {
+            if (nonZeroCount == 0) samplePixel = pixels[i];
+            nonZeroCount++;
+        }
+    }
+
+    static int logTimer = 0;
+    if (logTimer++ % 30 == 0) {
+        std::cout << "[DEBUG] video_cb -> W: " << width << ", H: " << height
+            << ", Pitch: " << pitch
+            << " | Non-zero pixels: " << nonZeroCount
+            << " | Sample Hex: 0x" << std::hex << samplePixel << std::dec << "\n";
+    }
+
+    // Create texture if needed
+    if (!instance->texture) {
+        instance->texture = SDL_CreateTexture(
+            instance->renderer,
+            SDL_PIXELFORMAT_ARGB8888,
+            SDL_TEXTUREACCESS_STREAMING,
+            width,
+            height
+        );
+        if (!instance->texture) {
+            std::cout << "[DEBUG] Failed to create texture! SDL Error: " << SDL_GetError() << "\n";
+            return;
+        }
+        std::cout << "[DEBUG] Texture successfully created: " << width << "x" << height << "\n";
+    }
+
+    // 1. Update our SDL texture with the raw pixel data provided by Snes9x
+    SDL_UpdateTexture(instance->texture, nullptr, data, (int)pitch);
+
+    // 2. Clear the screen, copy the texture to the renderer, and present it
+    SDL_RenderClear(instance->renderer);
+    SDL_RenderCopy(instance->renderer, instance->texture, nullptr, nullptr);
+    SDL_RenderPresent(instance->renderer);
+}
+
 void libretroAccess::audio_cb(int16_t, int16_t) {}
-size_t libretroAccess::audio_batch_cb(const int16_t*, size_t frames) { return frames; }
+
+size_t libretroAccess::audio_batch_cb(const int16_t* data, size_t frames) {
+    static int audioBatchCount = 0;
+    if (audioBatchCount++ % 50 == 0) {
+        std::cout << "[DEBUG] audio_batch_cb received " << frames << " frames of audio.\n";
+    }
+    return frames;
+}
+
 void libretroAccess::input_poll_cb() {}
 
 int16_t libretroAccess::input_state_cb(unsigned port, unsigned device, unsigned, unsigned id) {
@@ -106,9 +203,7 @@ bool libretroAccess::LoadROM(const std::string& path) {
     file.seekg(0, std::ios::beg);
 
     // 2. Read the file contents into a heap-allocated vector 
-    // (Note: Keep this vector alive or managed so the core can read it!)
-    // If your class owns this vector, store it as a member variable in libretroAccess.h!
-    static std::vector<char> rom_data; // Or store as private member: std::vector<char> m_romData;
+    static std::vector<char> rom_data;
     rom_data.resize(size);
 
     if (!file.read(rom_data.data(), size)) {
@@ -116,15 +211,29 @@ bool libretroAccess::LoadROM(const std::string& path) {
         return false;
     }
 
-    // 3. Populate retro_game_info with BOTH path and the loaded memory buffer
+    // 3. Populate retro_game_info with path and memory buffer
     struct retro_game_info game = {};
     game.path = path.c_str();
     game.data = rom_data.data();
     game.size = size;
     game.meta = nullptr;
 
-    // 4. Call the core's load function
-    return retro_load_game(&game);
+    // 4. Call the core's load function FIRST
+    if (!retro_load_game(&game)) {
+        std::cout << "Error: retro_load_game failed.\n";
+        return false;
+    }
+    std::cout << "ROM Loaded Successfully via Libretro!\n";
+
+    // 5. Query AV Info AFTER the game is loaded so the core configures its PPU/video clock
+    struct retro_system_av_info av_info = {};
+    retro_get_system_av_info(&av_info);
+
+    std::cout << "[DEBUG] AV Info -> Base FPS: " << av_info.timing.fps
+        << ", Width: " << av_info.geometry.base_width
+        << ", Height: " << av_info.geometry.base_height << "\n";
+
+    return true;
 }
 
 void libretroAccess::Reset() {
@@ -133,5 +242,51 @@ void libretroAccess::Reset() {
 
 void libretroAccess::RunFrame() {
     retro_run();
+}
+
+bool libretroAccess::InitVideo(int width, int height) {
+    // Initialize SDL Video subsystem
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << "\n";
+        return false;
+    }
+
+    // Create the window (scaled 2x by default so it's a comfortable size, e.g., 1024x896)
+    window = SDL_CreateWindow(
+        "SMKAI - SNES AI Racing",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        width * 2,
+        height * 2,
+        SDL_WINDOW_SHOWN
+    );
+    if (!window) {
+        std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << "\n";
+        return false;
+    }
+
+    // Create a hardware-accelerated renderer with VSync enabled (locks to 60fps)
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!renderer) {
+        std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << "\n";
+        return false;
+    }
+
+    // Create a streaming texture to hold the pixel frames coming from Snes9x
+    // (ARGB8888 matches Libretro's standard 32-bit pixel format)
+    texture = SDL_CreateTexture(
+        renderer,
+        SDL_PIXELFORMAT_ARGB8888,
+        SDL_TEXTUREACCESS_STREAMING,
+        width,
+        height
+    );
+    if (!texture) {
+        std::cout << "Texture could not be created! SDL_Error: " << SDL_GetError() << "\n";
+        return false;
+    }
+
+    std::cout << "SDL Video Window Initialized Successfully!\n";
+    return true;
 }
 //- Gemini

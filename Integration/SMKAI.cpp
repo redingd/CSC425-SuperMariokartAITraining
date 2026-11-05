@@ -1,8 +1,17 @@
 
+//Gemini -
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+//- Gemini
+
 #include <iostream>
 #include <string>
 
-#include <limits> //Gemini
+//Gemini -
+#include <limits>
+#include <chrono>
+#include <thread>
+//- Gemini
 
 #include "libretroAccess.h"
 #include "scoring.h"
@@ -34,8 +43,27 @@ int main() {
     std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
     //- Gemini
 
+
+    std::string showAI;
+    std::cout << std::endl << "Would you like to watch the AI race? (y) (case sensitive):" << std::endl;
+    std::cin >> showAI;
+    bool showGameplay = (showAI == "y"); // (Can be used later if you hook up video rendering)
+
+    //Gemini -
+    // NEW: Initialize video window if requested ---
+    if (showGameplay) {
+        // Standard SNES resolution is 256x224 (or 256x239)
+        if (!snes.InitVideo(256, 224)) {
+            std::cout << "Failed to initialize video window. Falling back to headless mode.\n";
+            showGameplay = false;
+        }
+    } //- Gemini
+
+    std::cin.clear();
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+
     std::string rompath;
-    std::cout << std::endl << "Enter the file path of the ROM here:" << std::endl;
+    std::cout << std::endl << "Enter the file path of the ROM here (.sfc or .smc):" << std::endl;
     getline(std::cin, rompath);
     if (!rompath.empty() && rompath.front() == '\"' && rompath.back() == '\"') {
         rompath = rompath.substr(1, rompath.size() - 2);
@@ -49,11 +77,15 @@ int main() {
     }
     std::cout << "ROM Loaded Successfully via Libretro!\n";
 
+    // Tell Snes9x that Port 0 has a standard SNES Joypad connected
+    retro_set_controller_port_device(0, RETRO_DEVICE_JOYPAD);
+
     // 3. Reset Core
     snes.Reset();
     std::cout << "SNES Core Reset Successfully!\n";
     //- Gemini
 
+    /*eh
     // User Ready Check
     std::string ready;
     std::cout << std::endl << "Are you ready to run: (y) (case sensitive) (quits otherwise):" << std::endl;
@@ -62,11 +94,7 @@ int main() {
         std::cout << std::endl << "User Quit" << std::endl;
         return 0;
     }
-
-    std::string showAI;
-    std::cout << std::endl << "Would you like to watch the AI race? (y) (case sensitive):" << std::endl;
-    std::cin >> showAI;
-    bool showGameplay = (showAI == "y"); // (Can be used later if you hook up video rendering)
+    */
 
 
     std::cout << std::endl << "Begin Emulation" << std::endl;
@@ -78,18 +106,43 @@ int main() {
     int frameCount = 0;
     int buttonSelection = 0;
 
+    //Gemini -
+    // Target ~60.09 FPS for SNES (approx. 16,639 microseconds per frame)
+    const auto frameDuration = std::chrono::microseconds(16639);
+    auto nextFrameTime = std::chrono::steady_clock::now() + frameDuration;
+    //- Gemini
+
     while (run) {
-        if (mutate::mutation()) {
+        //Gemini -
+        // --- NEW: Handle SDL window events so the window doesn't freeze ---
+        if (showGameplay) {
+            SDL_Event e;
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_QUIT) {
+                    run = false; // Gracefully quit if user clicks the X button
+                }
+            }
+        } //- Gemini
+
+        /*
+        if (frameCount < 150) {
+            // Force press 'START' for the first 150 frames to boot past title screen
+            buttonSelection = 8;
+        }
+        else if (mutate::mutation()) {
             buttonSelection = mutate::pressThis();
         }
         else {
             // Future AI policy output here
             buttonSelection = 0;
         }
+        */
 
         //Gemini -
         // Update the button state that libretroAccess will query on the next frame
-        current_buttons = buttons::intToButton(buttonSelection);
+        //current_buttons = buttons::intToButton(buttonSelection);
+
+        current_buttons = (1 << 3);
 
         // Advance emulator by exactly one frame (single-threaded & deterministic)
         snes.RunFrame();
@@ -99,7 +152,13 @@ int main() {
 
         // Periodic logging and score tracking check
         if (frameCount % 100 == 0) {
-            std::cout << "Frames executed: " << frameCount << " | Current Score: " << scoring::score << "\n";
+            std::cout << "Frames executed: " << frameCount << " | Current Score: " << scoring::score << "\n"; //Current Score added by Gemini
+        }
+
+        // Only pace to 60 FPS if the user is watching the visual window
+        if (showGameplay) {
+            std::this_thread::sleep_until(nextFrameTime);
+            nextFrameTime += frameDuration;
         }
     }
 

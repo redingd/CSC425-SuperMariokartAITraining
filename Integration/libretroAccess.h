@@ -2,6 +2,7 @@
 
 //Gemini -
 #include <string>
+#include <SDL.h>
 //- Gemini
 
 #define RETRO_API //Gemini
@@ -22,11 +23,17 @@ private:
     static void input_poll_cb(void);
     static int16_t input_state_cb(unsigned port, unsigned device, unsigned index, unsigned id);
 
+    // SDL Window Components ---
+    SDL_Window* window = nullptr;
+    SDL_Renderer* renderer = nullptr;
+    SDL_Texture* texture = nullptr;
+
 public:
     libretroAccess();
     ~libretroAccess();
 
     bool Initialize(unsigned int& button_ref);
+    bool InitVideo(int width = 512, int height = 448); // Sets up the SDL window
     bool LoadROM(const std::string& path);
     void Reset();
     void RunFrame();
