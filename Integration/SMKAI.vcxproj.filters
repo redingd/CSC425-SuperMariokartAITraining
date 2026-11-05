@@ -15,7 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SMKAI.cpp">
+    <ClInclude Include="buttons.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mutate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scoring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libretroAccess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="buttons.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mutate.cpp">
@@ -24,13 +38,14 @@
     <ClCompile Include="scoring.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="mutate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="scoring.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="libretroAccess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SMKAI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="outdated.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
