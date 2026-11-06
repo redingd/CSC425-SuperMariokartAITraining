@@ -48,8 +48,9 @@ bool libretroAccess::env_cb(unsigned cmd, void* data) {
     case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT: {
         if (data) {
             enum retro_pixel_format* pix_fmt = (enum retro_pixel_format*)data;
-            std::cout << "[DEBUG] Core requested pixel format: " << *pix_fmt << " (Setting to XRGB8888 = 0)\n";
-            *pix_fmt = RETRO_PIXEL_FORMAT_XRGB8888;
+            *pix_fmt = RETRO_PIXEL_FORMAT_XRGB8888; // Force 32-bit output from Snes9x
+            instance->core_pixel_format = *pix_fmt;
+            std::cout << "[DEBUG] Forced pixel format to XRGB8888\n";
             return true;
         }
         return false;
@@ -105,13 +106,14 @@ bool libretroAccess::env_cb(unsigned cmd, void* data) {
 
 void libretroAccess::video_cb(const void* data, unsigned width, unsigned height, size_t pitch) {
     // If video wasn't initialized (running headlessly), or data is missing, skip rendering
-    if (!data || !instance || !instance->renderer || !instance->texture) {
+    // FIX: Only check data, instance, and renderer here. Allow texture to be null so it can be created!
+    if (!data || !instance || !instance->renderer) {
         std::cout << "[DEBUG] video_cb skipped (null pointer)!\n";
         return;
     }
 
     // Diagnostic: Scan the first few rows to see if there's *any* non-zero data
-    const uint32_t* pixels = static_cast<const uint32_t*>(data);
+    const uint16_t* pixels = static_cast<const uint16_t*>(data);
     int nonZeroCount = 0;
     uint32_t samplePixel = 0;
 
@@ -132,9 +134,11 @@ void libretroAccess::video_cb(const void* data, unsigned width, unsigned height,
 
     // Create texture if needed
     if (!instance->texture) {
+        std::cout << "[DEBUG] Creating 16-bit texture with RGB565 format\n";
+
         instance->texture = SDL_CreateTexture(
             instance->renderer,
-            SDL_PIXELFORMAT_ARGB8888,
+            SDL_PIXELFORMAT_RGB565, // <-- Correct format matching Snes9x's 16-bit native output
             SDL_TEXTUREACCESS_STREAMING,
             width,
             height
@@ -146,7 +150,7 @@ void libretroAccess::video_cb(const void* data, unsigned width, unsigned height,
         std::cout << "[DEBUG] Texture successfully created: " << width << "x" << height << "\n";
     }
 
-    // 1. Update our SDL texture with the raw pixel data provided by Snes9x
+    // 1. Update texture using the core's native pitch (restores full 256 width!)
     SDL_UpdateTexture(instance->texture, nullptr, data, (int)pitch);
 
     // 2. Clear the screen, copy the texture to the renderer, and present it
@@ -253,7 +257,7 @@ bool libretroAccess::InitVideo(int width, int height) {
 
     // Create the window (scaled 2x by default so it's a comfortable size, e.g., 1024x896)
     window = SDL_CreateWindow(
-        "SMKAI - SNES AI Racing",
+        "SMKAI - AI Playing Super MarioKart", //User Named
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         width * 2,
@@ -272,19 +276,8 @@ bool libretroAccess::InitVideo(int width, int height) {
         return false;
     }
 
-    // Create a streaming texture to hold the pixel frames coming from Snes9x
-    // (ARGB8888 matches Libretro's standard 32-bit pixel format)
-    texture = SDL_CreateTexture(
-        renderer,
-        SDL_PIXELFORMAT_ARGB8888,
-        SDL_TEXTUREACCESS_STREAMING,
-        width,
-        height
-    );
-    if (!texture) {
-        std::cout << "Texture could not be created! SDL_Error: " << SDL_GetError() << "\n";
-        return false;
-    }
+    // Defer texture creation to video_cb so it uses BGRX8888 properly!
+    texture = nullptr;
 
     std::cout << "SDL Video Window Initialized Successfully!\n";
     return true;

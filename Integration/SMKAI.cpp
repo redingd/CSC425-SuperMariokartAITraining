@@ -43,6 +43,14 @@ int main() {
     //- Gemini
 
 
+    std::string rompath;
+    std::cout << std::endl << "Enter the file path of the ROM here (.sfc or .smc):" << std::endl;
+    getline(std::cin, rompath);
+    if (!rompath.empty() && rompath.front() == '\"' && rompath.back() == '\"') {
+        rompath = rompath.substr(1, rompath.size() - 2);
+    }
+
+
     std::string showAI;
     std::cout << std::endl << "Would you like to watch the AI race? (y) (case sensitive):" << std::endl;
     std::cin >> showAI;
@@ -70,15 +78,6 @@ int main() {
         }
     } //- Gemini
 
-    std::cin.clear();
-    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
-
-    std::string rompath;
-    std::cout << std::endl << "Enter the file path of the ROM here (.sfc or .smc):" << std::endl;
-    getline(std::cin, rompath);
-    if (!rompath.empty() && rompath.front() == '\"' && rompath.back() == '\"') {
-        rompath = rompath.substr(1, rompath.size() - 2);
-    }
 
     //Gemini -
     // 2. Load ROM
