@@ -3,6 +3,22 @@
 using namespace std;
 
 
+scoring::scoring() {
+    score = 0;
+    prevCheck = 0;
+}
+
+
+int scoring::getScore() {
+    return score;
+}
+int scoring::seeScoreChange() {
+    int temp = prevCheck;
+    prevCheck = score;
+    return score - temp;
+}
+
+
 /*void scoring::collectedCoin() {
     score += 2;
 }*/
@@ -27,4 +43,11 @@ void scoring::spunOut() {
 
 void scoring::completedLap(int place) {
     score += (10 - place) * 3;
+}
+/*void scoring::completedRace(unknown type) {
+    score += not sure yet;
+}*/
+
+void scoring::collision() {
+    score -= 1;
 }

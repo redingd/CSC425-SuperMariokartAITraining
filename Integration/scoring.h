@@ -4,9 +4,18 @@
 class scoring {
 
 private:
-    int score = 0;
+
+    int score; //Current Score
+    int prevCheck; //Score when last checked by AI
+
 
 public:
+
+    scoring();
+
+    int getScore();
+    int seeScoreChange(); //Returns difference of the last time AI looked at its score
+
     //void collectedCoin();
     void lostCoin();
     //void pickedItem();
@@ -17,5 +26,7 @@ public:
 
     void completedLap(int);
     //void completedRace(unknownType);
+
+    void collision();
 
 };
