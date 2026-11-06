@@ -1,10 +1,12 @@
 #pragma once //IMPORTANT TO NOT KEEP REDEFINING HEADER
 
 
-namespace scoring {
+class scoring {
 
-    inline int score = 0;
+private:
+    int score = 0;
 
+public:
     //void collectedCoin();
     void lostCoin();
     //void pickedItem();
@@ -16,4 +18,4 @@ namespace scoring {
     void completedLap(int);
     //void completedRace(unknownType);
 
-}
+};
