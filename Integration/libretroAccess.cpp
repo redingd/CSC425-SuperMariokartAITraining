@@ -255,31 +255,36 @@ bool libretroAccess::InitVideo(int width, int height) {
         return false;
     }
 
-    // Create the window (scaled 2x by default so it's a comfortable size, e.g., 1024x896)
+    // 1. Add SDL_WINDOW_RESIZABLE to the window creation flags
     window = SDL_CreateWindow(
-        "SMKAI - AI Playing Super MarioKart", //User Named
+        "SMKAI - AI Playing Super MarioKart",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         width * 2,
         height * 2,
-        SDL_WINDOW_SHOWN
+        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE // <-- Enables mouse resizing and maximize buttons
     );
     if (!window) {
         std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << "\n";
         return false;
     }
 
-    // Create a hardware-accelerated renderer with VSync enabled (locks to 60fps)
+    // Create a hardware-accelerated renderer with VSync enabled
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
         std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << "\n";
         return false;
     }
 
-    // Defer texture creation to video_cb so it uses BGRX8888 properly!
+    // 2. Lock the logical presentation size to the SNES base resolution (256x224).
+    // This tells SDL to automatically handle scaling and letterboxing when the user 
+    // drags the window borders, keeping Mario and the game world perfectly proportioned.
+    SDL_RenderSetLogicalSize(renderer, width, height);
+
+    // Defer texture creation to video_cb
     texture = nullptr;
 
-    std::cout << "SDL Video Window Initialized Successfully!\n";
+    std::cout << "SDL Resizable Video Window Initialized Successfully!\n";
     return true;
 }
 //- Gemini

@@ -13,6 +13,8 @@
 
 class libretroAccess {
 private:
+    enum retro_pixel_format core_pixel_format = RETRO_PIXEL_FORMAT_0RGB1555;
+
     unsigned int* current_buttons_ptr = nullptr;
     static libretroAccess* instance;
 
