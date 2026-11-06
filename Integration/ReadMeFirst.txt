@@ -5,3 +5,4 @@ CXAudio2.cpp has a change which that changed file is in the changed file foolder
 The project can be opened through the win32/snes9xw.sln to open it on visual community 2022
 
 the snes9x projects may or may not have need of the project settings updated
+sdl2.nuget is needed for this project
