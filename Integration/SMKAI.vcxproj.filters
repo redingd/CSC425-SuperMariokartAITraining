@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\aiSegments">
+      <UniqueIdentifier>{d397a678-fa12-4ed3-9391-c57f484aafb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\aiSegments">
+      <UniqueIdentifier>{a0b60706-f896-4616-b533-3a633f3fded3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="buttons.h">
@@ -21,11 +27,14 @@
     <ClInclude Include="mutate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scoring.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="libretroAccess.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aiSegments\scoring.h">
+      <Filter>Header Files\aiSegments</Filter>
+    </ClInclude>
+    <ClInclude Include="aiSegments\AIgorithm.h">
+      <Filter>Header Files\aiSegments</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -33,9 +42,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mutate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="scoring.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="libretroAccess.cpp">
@@ -46,6 +52,12 @@
     </ClCompile>
     <ClCompile Include="outdated.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="aiSegments\AIgorithm.cpp">
+      <Filter>Source Files\aiSegments</Filter>
+    </ClCompile>
+    <ClCompile Include="aiSegments\scoring.cpp">
+      <Filter>Source Files\aiSegments</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -16,15 +16,29 @@
 #include "libretroAccess.h"
 #include "mutate.h"
 #include "buttons.h"
+#include "aiSegments/AIgorithm.h"
 
 
-int main() {
+int main(int argc, char* argv[]) {
     std::cout << "Program Started!" << std::endl;
 
-    double tempRate;
-    std::cout << std::endl << "Please enter in decimal form the mutation rate: ";
-    std::cin >> tempRate;
-    mutate::setMutate(tempRate);
+    bool manyAI = argc > 1;
+
+    int AID = 0;
+    if (manyAI) {
+        AID = std::stoi(argv[1]); //Gemini
+    }
+    else {
+        double tempRate;
+        std::cout << std::endl << "Please enter in decimal form the mutation rate: ";
+        std::cin >> tempRate;
+        mutate::setMutate(tempRate);
+
+        //Gemini -
+        std::cin.clear();
+        std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+        //- Gemini
+    }
 
     //Gemini -
     // 1. Initialize Emulator Wrapper
@@ -32,51 +46,51 @@ int main() {
     unsigned int current_buttons = 0;
 
     if (!snes.Initialize(current_buttons)) {
-        std::cout << "Failed to initialize Libretro and snes9x_libretro.dll!\n";
-        std::cout << "Ensure snes9x_libretro.dll is built and placed in your executable's working directory.\n";
+        std::cout << "Failed to initialize Libretro!\n";
+        std::cout << "Ensure libretro.ccp/h are placed correctly in your executable's working directory.\n";
         return -1;
     }
     std::cout << "Libretro Core Initialized Successfully!\n";
-
-    std::cin.clear();
-    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
     //- Gemini
 
 
     std::string rompath;
-    std::cout << std::endl << "Enter the file path of the ROM here (.sfc or .smc):" << std::endl;
-    getline(std::cin, rompath);
-    if (!rompath.empty() && rompath.front() == '\"' && rompath.back() == '\"') {
-        rompath = rompath.substr(1, rompath.size() - 2);
-    }
-
-
-    std::string showAI;
-    std::cout << std::endl << "Would you like to watch the AI race? (y) (case sensitive):" << std::endl;
-    std::cin >> showAI;
-    bool showGameplay = (showAI == "y"); // (Can be used later if you hook up video rendering)
-
     int watchSpeed = 1;
-    if (showGameplay) {
-        std::cout << std::endl << "Speed Options For Viewing:" << std::endl <<
-            "Half Speed (0)" << std::endl <<
-            "Normal Speed (1)" << std::endl <<
-            "Double Speed (2)" << std::endl <<
-            "Triple Speed (3)" << std::endl <<
-            "Quadruple Speed (4)" << std::endl <<
-            "Please enter your selection (int): ";
-        std::cin >> watchSpeed;
-    }
-
-    //Gemini -
-    // NEW: Initialize video window if requested ---
-    if (showGameplay) {
-        // Standard SNES resolution is 256x224 (or 256x239)
-        if (!snes.InitVideo(256, 224)) {
-            std::cout << "Failed to initialize video window. Falling back to headless mode.\n";
-            showGameplay = false;
+    bool showGameplay = false;
+    if (!manyAI) {
+        std::cout << std::endl << "Enter the file path of the ROM here (.sfc or .smc):" << std::endl;
+        getline(std::cin, rompath);
+        if (!rompath.empty() && rompath.front() == '\"' && rompath.back() == '\"') {
+            rompath = rompath.substr(1, rompath.size() - 2);
         }
-    } //- Gemini
+
+
+        std::string showAI;
+        std::cout << std::endl << "Would you like to watch the AI race? (y) (case sensitive):" << std::endl;
+        std::cin >> showAI;
+        showGameplay = (showAI == "y"); // (Can be used later if you hook up video rendering)
+
+        if (showGameplay) {
+            std::cout << std::endl << "Speed Options For Viewing:" << std::endl <<
+                "Half Speed (0)" << std::endl <<
+                "Normal Speed (1)" << std::endl <<
+                "Double Speed (2)" << std::endl <<
+                "Triple Speed (3)" << std::endl <<
+                "Quadruple Speed (4)" << std::endl <<
+                "Please enter your selection (int): ";
+            std::cin >> watchSpeed;
+        }
+
+        //Gemini -
+        // NEW: Initialize video window if requested ---
+        if (showGameplay) {
+            // Standard SNES resolution is 256x224 (or 256x239)
+            if (!snes.InitVideo(256, 224)) {
+                std::cout << "Failed to initialize video window. Falling back to headless mode.\n";
+                showGameplay = false;
+            }
+        } //- Gemini
+    }
 
 
     //Gemini -
@@ -95,16 +109,16 @@ int main() {
     std::cout << "SNES Core Reset Successfully!\n";
     //- Gemini
 
-    /*eh
-    // User Ready Check
-    std::string ready;
-    std::cout << std::endl << "Are you ready to run: (y) (case sensitive) (quits otherwise):" << std::endl;
-    std::cin >> ready;
-    if (ready != "y") {
-        std::cout << std::endl << "User Quit" << std::endl;
-        return 0;
+    
+    AIgorithm theAIgorithm;
+    if (manyAI) {
+        theAIgorithm = AIgorithm(AID);
+        std::cout << "AI " << AID << " of " << argc << " up and ready!" << std::endl;
     }
-    */
+    else {
+        theAIgorithm = AIgorithm();
+        std::cout << std::endl << "AI up and ready!" << std::endl;
+    }
 
 
     std::cout << std::endl << "Begin Emulation" << std::endl;
@@ -184,9 +198,8 @@ int main() {
         else if (mutate::mutation()) {
             buttonSelection = mutate::pressThis();
         }
-        else {
-            // Future AI policy output here
-            buttonSelection = 0;
+        else { //AI Action
+            buttonSelection = theAIgorithm.aiButtonChoice();
         }
 
         //Gemini -
@@ -199,16 +212,18 @@ int main() {
 
         frameCount++;
 
-        // Periodic logging and score tracking check
-        if (frameCount % 100 == 0) {
-            std::cout << "Frames executed: " << frameCount << " | Current Score: " << /*score*/ 0 << "\n"; //Current Score added by Gemini
+        // Periodic frame and score tracking check
+        if (frameCount % 300 == 0) {
+            std::cout << "Frames executed: " << frameCount;
+            theAIgorithm.aiFeedback();
         }
 
+        //Gemini -
         // Only pace to 60 FPS if the user is watching the visual window
         if (showGameplay) {
             std::this_thread::sleep_until(nextFrameTime);
             nextFrameTime += frameDuration;
-        }
+        } //- Gemini
     }
 
     return 0;

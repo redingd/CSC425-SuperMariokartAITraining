@@ -138,17 +138,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aiSegments\AIgorithm.h" />
+    <ClInclude Include="aiSegments\scoring.h" />
     <ClInclude Include="buttons.h" />
     <ClInclude Include="libretroAccess.h" />
     <ClInclude Include="mutate.h" />
-    <ClInclude Include="scoring.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="aiSegments\AIgorithm.cpp" />
+    <ClCompile Include="aiSegments\scoring.cpp" />
     <ClCompile Include="buttons.cpp" />
     <ClCompile Include="libretroAccess.cpp" />
     <ClCompile Include="mutate.cpp" />
     <ClCompile Include="outdated.cpp" />
-    <ClCompile Include="scoring.cpp" />
     <ClCompile Include="SMKAI.cpp" />
   </ItemGroup>
   <ItemGroup>
