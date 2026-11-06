@@ -1,6 +1,5 @@
 #pragma once //IMPORTANT TO NOT KEEP REDEFINING HEADER
 
-#include<iostream>
 #include<random>
 #include<ctime>
 
