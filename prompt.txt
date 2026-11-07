@@ -1,0 +1,17 @@
+I am coding my own ai using cpp
+i am coding in visual studio 2022
+the ai will play super mariokart
+it will do this using libretro and snes9x
+i am working in my own project in the snes9xw.sln from the snes9x github
+
+please do not give any code until prompted with the next steps
+i am going to give you (# files you think necessary) files out of (total of our files) to look at before beggining
+please wait for instructions on next steps after all files have neen shown to give any thurough response or code
+
+
+
+copy and paste in the code of each file in its own prompt
+
+
+
+tell it what step youd like to take, ask if there's any other code it would like to see it, and sometimes maybe what options you have on that step, prolly dont want it to code just yet
