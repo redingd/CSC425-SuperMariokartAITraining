@@ -5,7 +5,7 @@ it will do this using libretro and snes9x
 i am working in my own project in the snes9xw.sln from the snes9x github
 
 please do not give any code until prompted with the next steps
-i am going to give you (# files you think necessary) files out of (total of our files) to look at before beggining
+i am going to give you (# files you think necessary) files to look at before beggining
 please wait for instructions on next steps after all files have neen shown to give any thurough response or code
 
 
