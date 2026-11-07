@@ -214,7 +214,7 @@ int main(int argc, char* argv[]) {
 
         // Periodic frame and score tracking check
         if (frameCount % 300 == 0) {
-            std::cout << "Frames executed: " << frameCount;
+            std::cout << "Frames executed: " << frameCount << " \t ";
             theAIgorithm.aiFeedback();
         }
 

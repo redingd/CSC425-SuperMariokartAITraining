@@ -50,7 +50,6 @@ bool libretroAccess::env_cb(unsigned cmd, void* data) {
             enum retro_pixel_format* pix_fmt = (enum retro_pixel_format*)data;
             *pix_fmt = RETRO_PIXEL_FORMAT_XRGB8888; // Force 32-bit output from Snes9x
             instance->core_pixel_format = *pix_fmt;
-            std::cout << "[DEBUG] Forced pixel format to XRGB8888\n";
             return true;
         }
         return false;
@@ -124,13 +123,6 @@ void libretroAccess::video_cb(const void* data, unsigned width, unsigned height,
         }
     }
 
-    static int logTimer = 0;
-    if (logTimer++ % 30 == 0) {
-        std::cout << "[DEBUG] video_cb -> W: " << width << ", H: " << height
-            << ", Pitch: " << pitch
-            << " | Non-zero pixels: " << nonZeroCount
-            << " | Sample Hex: 0x" << std::hex << samplePixel << std::dec << "\n";
-    }
 
     // Create texture if needed
     if (!instance->texture) {
@@ -162,10 +154,6 @@ void libretroAccess::video_cb(const void* data, unsigned width, unsigned height,
 void libretroAccess::audio_cb(int16_t, int16_t) {}
 
 size_t libretroAccess::audio_batch_cb(const int16_t* data, size_t frames) {
-    static int audioBatchCount = 0;
-    if (audioBatchCount++ % 50 == 0) {
-        std::cout << "[DEBUG] audio_batch_cb received " << frames << " frames of audio.\n";
-    }
     return frames;
 }
 
@@ -233,9 +221,6 @@ bool libretroAccess::LoadROM(const std::string& path) {
     struct retro_system_av_info av_info = {};
     retro_get_system_av_info(&av_info);
 
-    std::cout << "[DEBUG] AV Info -> Base FPS: " << av_info.timing.fps
-        << ", Width: " << av_info.geometry.base_width
-        << ", Height: " << av_info.geometry.base_height << "\n";
 
     return true;
 }
