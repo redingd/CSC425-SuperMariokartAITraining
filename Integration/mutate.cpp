@@ -22,9 +22,9 @@ namespace mutate {//Gemini aided line
     }
 
     int pressThis() {
-        //22 Reasonable Single and Combo Button Presses
+        //24 Reasonable Single and Combo Button Presses
         double ran = randomRange(randomGenerator);
-        int outCombo = 21 - 21 * ran;
+        int outCombo = 23 - 23 * ran;
         return outCombo;
     }
 

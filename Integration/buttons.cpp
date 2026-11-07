@@ -57,22 +57,28 @@ namespace buttons {
         case 15: // Press B and A and Down dPad
             return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_A) | (1 << RETRO_DEVICE_ID_JOYPAD_DOWN);
 
-        case 16: // Press Y, Brake/Backwards
+        case 16: // Press B and A and Down dPad and Left dPad
+            return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_A) | (1 << RETRO_DEVICE_ID_JOYPAD_DOWN);
+
+        case 17: // Press B and A and Down dPad and Right dPad
+            return (1 << RETRO_DEVICE_ID_JOYPAD_B) | (1 << RETRO_DEVICE_ID_JOYPAD_A) | (1 << RETRO_DEVICE_ID_JOYPAD_DOWN);
+
+        case 18: // Press Y, Brake/Backwards
             return (1 << RETRO_DEVICE_ID_JOYPAD_Y);
 
-        case 17: // Press Y and Left dPad
+        case 19: // Press Y and Left dPad
             return (1 << RETRO_DEVICE_ID_JOYPAD_Y) | (1 << RETRO_DEVICE_ID_JOYPAD_LEFT);
 
-        case 18: // Press Y and Right dPad
+        case 20: // Press Y and Right dPad
             return (1 << RETRO_DEVICE_ID_JOYPAD_Y) | (1 << RETRO_DEVICE_ID_JOYPAD_RIGHT);
 
-        case 19: // Press Y and A
+        case 21: // Press Y and A
             return (1 << RETRO_DEVICE_ID_JOYPAD_Y) | (1 << RETRO_DEVICE_ID_JOYPAD_A);
 
-        case 20: // Press Y and X
+        case 22: // Press Y and X
             return (1 << RETRO_DEVICE_ID_JOYPAD_Y) | (1 << RETRO_DEVICE_ID_JOYPAD_X);
 
-        case 21: // No press
+        case 23: // No press
             return 0;
 
         default: // Also no press

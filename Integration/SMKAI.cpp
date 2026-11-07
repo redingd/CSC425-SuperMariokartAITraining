@@ -192,12 +192,12 @@ int main(int argc, char* argv[]) {
                 buttonSelection = 0;
             }
             else {
-                buttonSelection = 21;
+                buttonSelection = 23;
             }
         }
         else if (mutate::mutation()) {
             //Ensure that when there're multiple AI's they each act differrently
-            buttonSelection = (mutate::pressThis() + AID) % 22;
+            buttonSelection = (mutate::pressThis() + AID) % 24;
         }
         else { //AI Action
             buttonSelection = theAIgorithm.aiButtonChoice();
