@@ -1,6 +1,7 @@
 #pragma once
 
 #include<iostream>
+#include <cstdint> //For uint8_t type
 
 #include "scoring.h"
 #include "../mutate.h" //temp
@@ -13,6 +14,10 @@ private:
 	scoring myScore; //may need to change to public, depends on if we can put the logic in ai or not
 	bool single;
 
+	//Active Race Values
+	int speed;
+	int coins = 0;
+
 
 public:
 
@@ -22,6 +27,8 @@ public:
 
 	int aiButtonChoice();
 
+	void updates(uint8_t*);
 	void aiFeedback(); //Gemini mentioned
+
 
 };
