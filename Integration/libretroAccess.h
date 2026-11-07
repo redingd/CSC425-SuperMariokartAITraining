@@ -3,6 +3,7 @@
 //Gemini -
 #include <string>
 #include <SDL.h>
+#include <cstdint>
 //- Gemini
 
 #define RETRO_API //Gemini
@@ -39,4 +40,7 @@ public:
     bool LoadROM(const std::string& path);
     void Reset();
     void RunFrame();
+
+    uint8_t* getRAM();
+    size_t getRAMsize();
 }; //- Gemini

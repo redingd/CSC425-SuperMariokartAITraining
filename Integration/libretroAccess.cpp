@@ -20,6 +20,9 @@ extern "C" {
     void retro_set_input_state(retro_input_state_t);
     void retro_set_controller_port_device(unsigned port, unsigned device);
     void retro_get_system_av_info(struct retro_system_av_info* info);
+    // --- ADDED: Libretro Memory Prototypes ---
+    void* retro_get_memory_data(unsigned id);
+    size_t retro_get_memory_size(unsigned id);
 }
 
 libretroAccess* libretroAccess::instance = nullptr;
@@ -271,5 +274,13 @@ bool libretroAccess::InitVideo(int width, int height) {
 
     std::cout << "SDL Resizable Video Window Initialized Successfully!\n";
     return true;
+}
+
+uint8_t* libretroAccess::getRAM() {
+    // RETRO_MEMORY_SYSTEM_RAM gives you access to the SNES WRAM (typically 128KB)
+    return static_cast<uint8_t*>(retro_get_memory_data(RETRO_MEMORY_SYSTEM_RAM));
+}
+size_t libretroAccess::getRAMsize() {
+    return retro_get_memory_size(RETRO_MEMORY_SYSTEM_RAM);
 }
 //- Gemini

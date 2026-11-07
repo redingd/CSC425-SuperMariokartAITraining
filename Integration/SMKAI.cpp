@@ -196,7 +196,8 @@ int main(int argc, char* argv[]) {
             }
         }
         else if (mutate::mutation()) {
-            buttonSelection = mutate::pressThis();
+            //Ensure that when there're multiple AI's they each act differrently
+            buttonSelection = (mutate::pressThis() + AID) % 22;
         }
         else { //AI Action
             buttonSelection = theAIgorithm.aiButtonChoice();
@@ -211,6 +212,9 @@ int main(int argc, char* argv[]) {
         //- Gemini
 
         frameCount++;
+
+        //Must make sure the ai is in a race when calling this
+        theAIgorithm.updates(snes.getRAM());
 
         // Periodic frame and score tracking check
         if (frameCount % 300 == 0) {
