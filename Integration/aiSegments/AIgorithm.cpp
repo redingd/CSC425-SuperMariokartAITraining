@@ -22,21 +22,32 @@ int AIgorithm::aiButtonChoice() {
 
 
 void AIgorithm::updates(uint8_t* rostrum) {
-	//Change of Coins
-	uint8_t coinCount = rostrum[0x0E00];
-	if (coinCount > coins) {
-		for (int i = coins; i <= coinCount; i++) {
-			cout << "AI Gained a Coin!" << endl;
-			//myScore.collectedCoin();
+	uint8_t minutes = rostrum[0x0104];
+	uint8_t seconds = rostrum[0x0102];
+	uint8_t smallerTimerB = rostrum[0x0101];
+	uint8_t smallerTimerA = rostrum[0x0100];
+	//Temporary Racing Check - Will Need Updated When More than One Race
+	bool racing = minutes > 0 || seconds > 0 || smallerTimerB > 0 || smallerTimerA > 0;
+	if (racing) {
+		//Change of Coins
+		uint8_t coinCount = rostrum[0x0E00];
+		if (coinCount > coins) {
+			for (int i = coins; i < coinCount; i++) {
+				cout << "AI Gained a Coin!" << endl;
+				//myScore.collectedCoin();
+			}
+			coins = coinCount;
 		}
-		coins = coinCount;
+		else if (coinCount < coins) {
+			for (int i = coins; i >= coinCount; i--) {
+				cout << "AI Lost a Coin!" << endl;
+				myScore.lostCoin();
+			}
+			coins = coinCount;
+		}
 	}
-	else if (coinCount < coins) {
-		for (int i = coins; i >= coinCount; i--) {
-			cout << "AI Lost a Coin!" << endl;
-			myScore.lostCoin();
-		}
-		coins = coinCount;
+	else {
+		coins = 0;
 	}
 }
 
