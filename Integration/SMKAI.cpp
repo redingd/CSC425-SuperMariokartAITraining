@@ -214,7 +214,9 @@ int main(int argc, char* argv[]) {
         frameCount++;
 
         //Must make sure the ai is in a race when calling this
-        theAIgorithm.updates(snes.getRAM());
+        if (frameCount > 500) {
+            theAIgorithm.updates(snes.getRAM());
+        }
 
         // Periodic frame and score tracking check
         if (frameCount % 300 == 0) {
