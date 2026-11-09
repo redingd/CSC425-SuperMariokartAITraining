@@ -29,6 +29,11 @@ void AIgorithm::updates(uint8_t* rostrum) {
 	//Temporary Racing Check - Will Need Updated When More than One Race
 	bool racing = minutes > 0 || seconds > 0 || smallerTimerB > 0 || smallerTimerA > 0;
 	if (racing) {
+		//Took Too Long Check
+		if (smallerTimerA == 153 && smallerTimerB == 153 && seconds == 89 && minutes == 9) {
+			tooLongFlag = true;
+		}
+
 		//Change of Coins
 		uint8_t coinCount = rostrum[0x0E00];
 		if (coinCount > coins) {
@@ -37,13 +42,15 @@ void AIgorithm::updates(uint8_t* rostrum) {
 				//myScore.collectedCoin();
 			}
 			coins = coinCount;
+			cout << "AI Coin Count: " << coins << endl;
 		}
 		else if (coinCount < coins) {
-			for (int i = coins; i >= coinCount; i--) {
+			for (int i = coins; i > coinCount; i--) {
 				cout << "AI Lost a Coin!" << endl;
 				myScore.lostCoin();
 			}
 			coins = coinCount;
+			cout << "AI Coin Count: " << coins << endl;
 		}
 	}
 	else {
@@ -60,4 +67,12 @@ void AIgorithm::aiFeedback() {
 		cout << "I'm AI " << numInRun <<
 			" and my current score is: " << myScore.getScore() << endl;
 	}
+}
+
+bool AIgorithm::endMe() {
+	if (tooLongFlag) {
+		cout << "The AIgorithm Took Too Long" << endl;
+		return true;
+	}
+	return false;
 }

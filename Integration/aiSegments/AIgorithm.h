@@ -15,6 +15,7 @@ private:
 	bool single;
 
 	//Active Race Values
+	bool tooLongFlag = false;
 	int speed;
 	int coins = 0;
 
@@ -29,6 +30,7 @@ public:
 
 	void updates(uint8_t*);
 	void aiFeedback(); //Gemini mentioned
+	bool endMe();
 
 
 };
