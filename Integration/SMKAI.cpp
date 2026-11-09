@@ -77,6 +77,7 @@ int main(int argc, char* argv[]) {
                 "Double Speed (2)" << std::endl <<
                 "Triple Speed (3)" << std::endl <<
                 "Quadruple Speed (4)" << std::endl <<
+                "Quintuple Speed (5)" << std::endl <<
                 "Please enter your selection (int): ";
             std::cin >> watchSpeed;
         }
@@ -164,6 +165,14 @@ int main(int argc, char* argv[]) {
         targetFPS = 3328;
         break;
 
+    case 10:
+        targetFPS = 1664;
+        break;
+
+    case 20:
+        targetFPS = 832;
+        break;
+
     default:
         targetFPS = 16639;
         break;
@@ -222,6 +231,9 @@ int main(int argc, char* argv[]) {
         if (frameCount % 300 == 0) {
             std::cout << "Frames executed: " << frameCount << " \t ";
             theAIgorithm.aiFeedback();
+            if (frameCount > 30000 && theAIgorithm.endMe()) {
+                run = false;
+            }
         }
 
         //Gemini -
