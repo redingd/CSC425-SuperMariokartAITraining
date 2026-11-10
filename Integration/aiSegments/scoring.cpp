@@ -41,6 +41,22 @@ void scoring::spunOut() {
     score -= 1;
 }
 
+void scoring::checkPointCrossing(int many) {
+    if (many < 0) {
+        score -= 9;
+    }
+    /* For Shortcuts
+    else if (many > 1) {
+        score += 20;
+        for (int i = 0; i < many; i++) {
+            score += 10;
+        }
+    }
+    */
+    else {
+        score += 10;
+    }
+}
 void scoring::completedLap(int place) {
     score += (10 - place) * 3;
 }
@@ -49,5 +65,5 @@ void scoring::completedLap(int place) {
 }*/
 
 void scoring::collision() {
-    score -= 1;
+    score -= 1; //Might Change if Change to double
 }

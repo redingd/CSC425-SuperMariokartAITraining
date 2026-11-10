@@ -1,53 +1,33 @@
-#include "scoring.h"
-
-using namespace std;
+#pragma once //IMPORTANT TO NOT KEEP REDEFINING HEADER
 
 
-scoring::scoring() {
-    score = 0;
-    prevCheck = 0;
-}
+class scoring {
+
+private:
+
+    int score; //Current Score
+    int prevCheck; //Score when last checked by AI
 
 
-int scoring::getScore() {
-    return score;
-}
-int scoring::seeScoreChange() {
-    int temp = prevCheck;
-    prevCheck = score;
-    return score - temp;
-}
+public:
 
+    scoring();
 
-/*void scoring::collectedCoin() {
-    score += 2;
-}*/
-void scoring::lostCoin() {
-    score -= 1;
-}
-/*void scoring::pickedItem() {
-    score += 1;
-}
-void scoring::usedItem() {
-    score += 1;
-}*/
-void scoring::hitByItem() {
-    score -= 2;
-}
-void scoring::fellOffMap() {
-    score -= 5;
-}
-void scoring::spunOut() {
-    score -= 1;
-}
+    int getScore();
+    int seeScoreChange(); //Returns difference of the last time AI looked at its score
 
-void scoring::completedLap(int place) {
-    score += (10 - place) * 3;
-}
-/*void scoring::completedRace(unknown type) {
-    score += not sure yet;
-}*/
+    //void collectedCoin();
+    void lostCoin();
+    //void pickedItem();
+    //void usedItem();
+    void hitByItem();
+    void fellOffMap();
+    void spunOut();
 
-void scoring::collision() {
-    score -= 1;
-}
+    void checkPointCrossing(int);
+    void completedLap(int);
+    //void completedRace(unknownType);
+
+    void collision();
+
+};

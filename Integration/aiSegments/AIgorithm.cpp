@@ -4,22 +4,21 @@ using namespace std;
 
 
 AIgorithm::AIgorithm() {
-	myScore = scoring();
 	numInRun = 0;
 	single = true;
 }
 
 AIgorithm::AIgorithm(int num) {
-	myScore = scoring();
 	numInRun = num;
 	single = false;
 }
 
 
-bool AIgorithm::inARace(uint8_t* raceFinder) { //Add a Reset Function for When Race Begins or When Race Ends
+bool AIgorithm::inARace(uint8_t* raceFinder) {
 	int currentState = raceFinder[0x10C1]; //For raceState Change
 	if (currentState != raceState) { //Has Race State Changed
 		if (raceState == 0 || raceState == 133) { //When Race Begins
+			raceReset(raceFinder);
 			if (single) {
 				cout << "AIgorithm is in a Race!" << endl;
 			}
@@ -61,7 +60,7 @@ void AIgorithm::updates(uint8_t* rostrum) {
 		}
 
 		//Change of Coins
-		uint8_t coinCount = rostrum[0x0E00];
+		uint8_t coinCount = rostrum[0x0E00]; //Gemini
 		if (coinCount > coins) {
 			for (int i = coins; i < coinCount; i++) {
 				if (single) {
@@ -90,10 +89,23 @@ void AIgorithm::updates(uint8_t* rostrum) {
 		}
 
 		//Crossing a Checkpoint
+		uint8_t currentCheckPoint = rostrum[0x10C0];
+		if (currentCheckPoint != myCheckPoint) {
+			if (currentCheckPoint - myCheckPoint < -20) { //Check for Crossing Start
+				myScore.checkPointCrossing(1);
+			}
+			else {
+				myScore.checkPointCrossing(currentCheckPoint - myCheckPoint);
+			}
+			myCheckPoint = currentCheckPoint;
+		}
 	}
-	else {
-		coins = 0;
-	}
+}
+
+void AIgorithm::raceReset(uint8_t* sheep) {
+	coins = 0;
+	lap = 0;
+	myCheckPoint = sheep[0x10C0];
 }
 
 void AIgorithm::aiFeedback() {
