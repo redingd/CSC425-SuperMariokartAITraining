@@ -184,6 +184,8 @@ int main(int argc, char* argv[]) {
     auto nextFrameTime = std::chrono::steady_clock::now() + frameDuration;
     //- Gemini
 
+    bool inRace = false;
+
     while (run) {
         //Gemini -
         // --- NEW: Handle SDL window events so the window doesn't freeze ---
@@ -196,7 +198,7 @@ int main(int argc, char* argv[]) {
             }
         } //- Gemini
 
-        if (frameCount < 800) { //Startup Race
+        if (!inRace) { //Startup Race
             if (frameCount % 30 == 0) {
                 buttonSelection = 0;
             }
@@ -222,8 +224,12 @@ int main(int argc, char* argv[]) {
 
         frameCount++;
 
+        if (frameCount >= 500) {
+            inRace = theAIgorithm.inARace(snes.getRAM());
+        }
+
         //Must make sure the ai is in a race when calling this
-        if (frameCount > 500) {
+        if (inRace) {
             theAIgorithm.updates(snes.getRAM());
         }
 
@@ -231,7 +237,7 @@ int main(int argc, char* argv[]) {
         if (frameCount % 300 == 0) {
             std::cout << "Frames executed: " << frameCount << " \t ";
             theAIgorithm.aiFeedback();
-            if (frameCount > 30000 && theAIgorithm.endMe()) {
+            if (inRace && theAIgorithm.endMe()) {
                 run = false;
             }
         }
