@@ -41,8 +41,8 @@ bool AIgorithm::inARace(uint8_t* raceFinder) {
 }
 
 
-int AIgorithm::aiButtonChoice() {
-	return mutate::pressThis();
+int AIgorithm::aiButtonChoice(const vector<float>& aiScreen) {
+	return myNueralNetwork.process(aiScreen);
 }
 
 

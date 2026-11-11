@@ -1,10 +1,11 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 #include <cstdint> //For uint8_t type
 
 #include "scoring.h"
-#include "../mutate.h" //temp
+#include "theMatrix.h"
 
 class AIgorithm {
 
@@ -12,6 +13,7 @@ private:
 	
 	int numInRun;
 	bool single;
+	theMatrix myNueralNetwork = theMatrix();
 	scoring myScore = scoring(); //may need to change to public, depends on if we can put the logic in ai or not
 
 	//For Feedback Updating
@@ -32,13 +34,13 @@ private:
 public:
 
 	AIgorithm(); //Default
-	AIgorithm(int); //For numerous AI at once
+	AIgorithm(int); //For Numerous AI at Once
 
 
 	bool inARace(uint8_t*);
 	//Add a Reset Function for When Race Begins or When Race Ends
 
-	int aiButtonChoice();
+	int aiButtonChoice(const std::vector<float>&);
 
 	void updates(uint8_t*);
 	void raceReset(uint8_t*);
