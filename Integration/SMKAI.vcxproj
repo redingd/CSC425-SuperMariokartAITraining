@@ -140,6 +140,7 @@
   <ItemGroup>
     <ClInclude Include="aiSegments\AIgorithm.h" />
     <ClInclude Include="aiSegments\scoring.h" />
+    <ClInclude Include="aiSegments\theMatrix.h" />
     <ClInclude Include="buttons.h" />
     <ClInclude Include="libretroAccess.h" />
     <ClInclude Include="mutate.h" />
@@ -147,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="aiSegments\AIgorithm.cpp" />
     <ClCompile Include="aiSegments\scoring.cpp" />
+    <ClCompile Include="aiSegments\theMatrix.cpp" />
     <ClCompile Include="buttons.cpp" />
     <ClCompile Include="libretroAccess.cpp" />
     <ClCompile Include="mutate.cpp" />

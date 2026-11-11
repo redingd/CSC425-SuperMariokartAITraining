@@ -114,6 +114,30 @@ void libretroAccess::video_cb(const void* data, unsigned width, unsigned height,
         return;
     }
 
+    // --- ADDED: Capture pixels for AI without touching SDL rendering ---
+    // --- ADDED: Downsample pixels for AI (e.g., to a 32x32 grid) ---
+    const uint16_t* rawPixels = static_cast<const uint16_t*>(data);
+
+    int targetW = 32;
+    int targetH = 32;
+    instance->latestPixelState.resize(targetW * targetH);
+
+    for (int y = 0; y < targetH; ++y) {
+        int srcY = (y * height) / targetH;
+        for (int x = 0; x < targetW; ++x) {
+            int srcX = (x * width) / targetW;
+
+            // Get pixel from row pitch (pitch is in bytes, divide by 2 for uint16_t)
+            uint16_t pixel = rawPixels[srcY * (pitch / 2) + srcX];
+
+            // Normalize 16-bit color to 0.0f - 1.0f range
+            float intensity = static_cast<float>(pixel & 0x7FFF) / 32767.0f;
+
+            instance->latestPixelState[y * targetW + x] = intensity;
+        }
+    }
+    // -----------------------------------------------------------------
+
     // Diagnostic: Scan the first few rows to see if there's *any* non-zero data
     const uint16_t* pixels = static_cast<const uint16_t*>(data);
     int nonZeroCount = 0;
@@ -282,5 +306,9 @@ uint8_t* libretroAccess::getRAM() {
 }
 size_t libretroAccess::getRAMsize() {
     return retro_get_memory_size(RETRO_MEMORY_SYSTEM_RAM);
+}
+
+std::vector<float> libretroAccess::getPixels() {
+    return latestPixelState;
 }
 //- Gemini

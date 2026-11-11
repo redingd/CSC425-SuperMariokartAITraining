@@ -36,6 +36,9 @@
     <ClInclude Include="aiSegments\AIgorithm.h">
       <Filter>Header Files\aiSegments</Filter>
     </ClInclude>
+    <ClInclude Include="aiSegments\theMatrix.h">
+      <Filter>Header Files\aiSegments</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="buttons.cpp">
@@ -57,6 +60,9 @@
       <Filter>Source Files\aiSegments</Filter>
     </ClCompile>
     <ClCompile Include="aiSegments\scoring.cpp">
+      <Filter>Source Files\aiSegments</Filter>
+    </ClCompile>
+    <ClCompile Include="aiSegments\theMatrix.cpp">
       <Filter>Source Files\aiSegments</Filter>
     </ClCompile>
   </ItemGroup>

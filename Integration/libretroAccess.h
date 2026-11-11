@@ -4,6 +4,7 @@
 #include <string>
 #include <SDL.h>
 #include <cstdint>
+#include <vector>
 //- Gemini
 
 #define RETRO_API //Gemini
@@ -31,6 +32,9 @@ private:
     SDL_Renderer* renderer = nullptr;
     SDL_Texture* texture = nullptr;
 
+    // AI Frame Storage ---
+    std::vector<float> latestPixelState;
+
 public:
     libretroAccess();
     ~libretroAccess();
@@ -43,4 +47,7 @@ public:
 
     uint8_t* getRAM();
     size_t getRAMsize();
+
+    std::vector<float> getPixels();
+
 }; //- Gemini

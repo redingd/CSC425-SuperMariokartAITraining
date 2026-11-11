@@ -211,7 +211,7 @@ int main(int argc, char* argv[]) {
             buttonSelection = (mutate::pressThis() + AID) % 24;
         }
         else { //AI Action
-            buttonSelection = theAIgorithm.aiButtonChoice();
+            buttonSelection = theAIgorithm.aiButtonChoice(snes.getPixels());
         }
 
         //Gemini -
