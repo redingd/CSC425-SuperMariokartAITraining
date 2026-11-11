@@ -236,7 +236,7 @@ int main(int argc, char* argv[]) {
         // Periodic frame and score tracking check
         if (frameCount % 300 == 0) {
             std::cout << "Frames executed: " << frameCount << " \t ";
-            theAIgorithm.aiFeedback();
+            theAIgorithm.aiFeedback(snes.getRAM());
             if (inRace && theAIgorithm.endMe()) {
                 run = false;
             }
