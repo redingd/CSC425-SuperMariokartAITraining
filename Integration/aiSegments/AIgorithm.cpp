@@ -106,17 +106,29 @@ void AIgorithm::raceReset(uint8_t* sheep) {
 	coins = 0;
 	lap = 0;
 	myCheckPoint = sheep[0x10C0];
+	prevRaceScore = myScore.getScore();
 }
 
-void AIgorithm::aiFeedback() {
+void AIgorithm::aiFeedback(uint8_t* timer) {
+	uint8_t minutes = timer[0x0104];
+	uint8_t untrueSeconds = timer[0x0102]; //Every tenth second counts as 16 instead of 10 (1 is 1 ... 9 is 9)
+	int trueSeconds = untrueSeconds / 16 * 10 + untrueSeconds % 16;
 	int howsGoin = myScore.seeScoreChange();
+	int elapsedSec = trueSeconds + minutes * 60;
+	if (elapsedSec == 0) {
+		elapsedSec = 1;
+	}
+	double scorePerSec = (double) (myScore.getScore() - prevRaceScore) / (double) elapsedSec;
 	if (single) {
-		cout << "AIgorithm Score: " << myScore.getScore() << endl;
+		cout << "AIgorithm Score: " << myScore.getScore() << "\t Scoring/Second: " << scorePerSec << endl;
 	}
 	else {
 		cout << "I'm AI " << numInRun <<
-			" and my current score is: " << myScore.getScore() << endl;
+			" and my current score is: " << myScore.getScore() << "\t and scoring/second is: " << scorePerSec << endl;
 	}
+	updateFeedFlag = true;
+	scoreChange = howsGoin;
+	scoringAsecond = scorePerSec;
 }
 
 bool AIgorithm::endMe() {

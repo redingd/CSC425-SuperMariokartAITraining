@@ -1,6 +1,6 @@
 #pragma once
 
-#include<iostream>
+#include <iostream>
 #include <cstdint> //For uint8_t type
 
 #include "scoring.h"
@@ -14,6 +14,11 @@ private:
 	bool single;
 	scoring myScore = scoring(); //may need to change to public, depends on if we can put the logic in ai or not
 
+	//For Feedback Updating
+	bool updateFeedFlag = false;
+	int scoreChange = 0;
+	double scoringAsecond = 0;
+
 	//0 = Main Menu When First Starting, 127 = Opening of Race, 133 = End of Race
 	int raceState = 0;
 	//Active Race Values
@@ -21,6 +26,7 @@ private:
 	int lap = 0;
 	int myCheckPoint = 0;
 	int coins = 0;
+	int prevRaceScore = 0;
 
 
 public:
@@ -36,7 +42,7 @@ public:
 
 	void updates(uint8_t*);
 	void raceReset(uint8_t*);
-	void aiFeedback(); //Gemini mentioned
+	void aiFeedback(uint8_t*); //Gemini mentioned
 	bool endMe();
 
 
