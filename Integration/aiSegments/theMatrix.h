@@ -38,6 +38,9 @@ private:
 	float buttonBiasSize = 0.0001; //Keep the Bias for Buttons Low
 
 
+	std::vector<int> recentSelectionHistory;
+
+
 	void convertTo16(); //Conversion From 32x32 to 16x16
 	void convertTo8();	//Conversion From 16x16 to 8x8
 	void convertTo4();	//Conversion From 8x8 to 8x4
@@ -45,7 +48,7 @@ private:
 
 	int choice();
 
-	void vectorUpdateWeights(std::vector<float>, float, int);
+	void vectorUpdateWeights(std::vector<float>&, float, int);
 
 public:
 

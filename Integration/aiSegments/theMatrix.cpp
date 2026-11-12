@@ -5,6 +5,8 @@ using namespace std;
 
 
 theMatrix::theMatrix() {
+	//Set Selection History to Zero
+	recentSelectionHistory.clear();
 	//Set each layer to zeros
 	layer1.assign(16 * 16, 0.0f); //Gemini Aided
 	layer2.assign(8 * 8, 0.0f);
@@ -39,7 +41,7 @@ theMatrix::theMatrix() {
 	buttonBias[18] -= 0.081 * 0.9 * buttonBiasSize;
 }
 
-void theMatrix::vectorUpdateWeights(vector<float> thisMatrix, float rate, int ranEle) {
+void theMatrix::vectorUpdateWeights(vector<float>& thisMatrix, float rate, int ranEle) {
 	for (int i = 0; i < thisMatrix.size(); i++) {
 		float change = 0.0;
 		if (thisMatrix[i] < 0) {
@@ -175,8 +177,8 @@ void theMatrix::convertTo3() {
 }
 
 int theMatrix::choice() {
-	auto itWhereMax = max_element(outputControl.begin(), outputControl.end());
-	return distance(outputControl.begin(), itWhereMax);
+	auto itWhereMax = max_element(outputControl.begin(), outputControl.end()); //Gemini Aided
+	return distance(outputControl.begin(), itWhereMax); //Gemini Aided
 }
 
 
@@ -192,11 +194,20 @@ int theMatrix::process(const vector<float>& screen) {
 	convertTo8();
 	convertTo4();
 	convertTo3();
-	return choice();
+	int selection = choice();
+	recentSelectionHistory.push_back(selection);
+	return selection;
 }
 
 void theMatrix::updateWeights(int primary, double secondary) {
 	float reinforcementRate = (float) secondary / 10;
+	int selectionCount[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	if (recentSelectionHistory.empty()) {}
+	else {
+		for (auto it = recentSelectionHistory.begin(); it != recentSelectionHistory.end(); ++it) {
+			selectionCount[*it]++;
+		}
+	}
 	if (primary > 0) { //Reinforce Learning
 		vectorUpdateWeights(toL1, reinforcementRate, 1);
 		vectorUpdateWeights(toL2, reinforcementRate, 1);
@@ -215,6 +226,8 @@ void theMatrix::updateWeights(int primary, double secondary) {
 		vectorUpdateWeights(toL3, reinforcementRate, 0);
 		vectorUpdateWeights(toOut, reinforcementRate, 0);
 	}
+	//Reset Selection History
+	recentSelectionHistory.clear();
 }
 
 string theMatrix::getBiasWeights() {
