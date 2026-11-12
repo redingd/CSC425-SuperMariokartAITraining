@@ -1,0 +1,2 @@
+Most Likely Just Add a New Constructor to theMatrix for When Using Database Data
+This may Incur Adding and/or Changing AIgorithm Constructors
