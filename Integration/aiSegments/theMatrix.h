@@ -34,12 +34,18 @@ private:
 	std::uniform_real_distribution<float> weightRange{ -0.5, 0.5 };
 
 
+	float changeRate = 0.00001; //How Much the AI changes Weights and Bias
+	float buttonBiasSize = 0.0001; //Keep the Bias for Buttons Low
+
+
 	void convertTo16(); //Conversion From 32x32 to 16x16
 	void convertTo8();	//Conversion From 16x16 to 8x8
 	void convertTo4();	//Conversion From 8x8 to 8x4
 	void convertTo3();	//Conversion From 8x4 to 8x3
 
 	int choice();
+
+	void vectorUpdateWeights(std::vector<float>, float, int);
 
 public:
 

@@ -28,15 +28,52 @@ theMatrix::theMatrix() {
 		toOut[i] = weightRange(weightGenerator);
 	}
 	//Set Bias for Each Button
-	buttonBias.assign(8 * 3, weightRange(weightGenerator));
+	buttonBias.assign(8 * 3, weightRange(weightGenerator) * buttonBiasSize);
 	//Forward Bias
-	buttonBias[0] += 0.1;
+	buttonBias[0] += 0.1 * buttonBiasSize;
 	//Forward and Left Bias
-	buttonBias[1] += 0.09;
+	buttonBias[1] += 0.09 * buttonBiasSize;
 	//Forward and Left Power Slide Bias
-	buttonBias[10] += 0.081;
+	buttonBias[10] += 0.081 * buttonBiasSize;
 	//Backward Bias
-	buttonBias[18] -= 0.081 * 0.9;
+	buttonBias[18] -= 0.081 * 0.9 * buttonBiasSize;
+}
+
+void theMatrix::vectorUpdateWeights(vector<float> thisMatrix, float rate, int ranEle) {
+	for (int i = 0; i < thisMatrix.size(); i++) {
+		float change = 0.0;
+		if (thisMatrix[i] < 0) {
+			float rand = weightRange(weightGenerator);
+			if (ranEle > 0) {
+				change -= rate;
+			}
+			else if (ranEle < 0) {
+				change += rate * rand / 10;
+			}
+			else {
+				change -= rand / 100;
+			}
+		}
+		else {
+			float rand = weightRange(weightGenerator);
+			if (ranEle > 0) {
+				change += rate;
+			}
+			else if (ranEle < 0) {
+				change -= rate * rand / 100;
+			}
+			else {
+				change += rand / 10000;
+			}
+		}
+		thisMatrix[i] += change;
+		if (thisMatrix[i] > 5.0) {
+			thisMatrix[i] = 5.0;
+		}
+		else if (thisMatrix[i] < -5.0) {
+			thisMatrix[i] = -5.0;
+		}
+	}
 }
 
 //private methods
@@ -158,7 +195,27 @@ int theMatrix::process(const vector<float>& screen) {
 	return choice();
 }
 
-void theMatrix::updateWeights(int primary, double secondary) {}
+void theMatrix::updateWeights(int primary, double secondary) {
+	float reinforcementRate = (float) secondary / 10;
+	if (primary > 0) { //Reinforce Learning
+		vectorUpdateWeights(toL1, reinforcementRate, 1);
+		vectorUpdateWeights(toL2, reinforcementRate, 1);
+		vectorUpdateWeights(toL3, reinforcementRate, 1);
+		vectorUpdateWeights(toOut, reinforcementRate, 1);
+	}
+	else if (primary < 0) { //Uninforce Learning
+		vectorUpdateWeights(toL1, reinforcementRate, -1);
+		vectorUpdateWeights(toL2, reinforcementRate, -1);
+		vectorUpdateWeights(toL3, reinforcementRate, -1);
+		vectorUpdateWeights(toOut, reinforcementRate, -1);
+	}
+	else { //Tiny Rando
+		vectorUpdateWeights(toL1, reinforcementRate, 0);
+		vectorUpdateWeights(toL2, reinforcementRate, 0);
+		vectorUpdateWeights(toL3, reinforcementRate, 0);
+		vectorUpdateWeights(toOut, reinforcementRate, 0);
+	}
+}
 
 string theMatrix::getBiasWeights() {
 	string result = "\nLayer 1: ";
