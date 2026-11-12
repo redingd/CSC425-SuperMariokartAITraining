@@ -1,2 +1,3 @@
 Most Likely Just Add a New Constructor to theMatrix for When Using Database Data
 This may Incur Adding and/or Changing AIgorithm Constructors
+Or Add a LoadUP Weights Function in theMatrix for Also When Changing Races
