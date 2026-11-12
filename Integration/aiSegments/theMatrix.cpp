@@ -10,11 +10,33 @@ theMatrix::theMatrix() {
 	layer2.assign(8 * 8, 0.0f);
 	layer3.assign(8 * 4, 0.0f);
 	outputControl.assign(8 * 3, 0.0f);
-	//Set each layer weight to 1/2
-	toL1.assign(3 * 3, 0.5f);
-	toL2.assign(3 * 3, 0.5f);
-	toL3.assign(3 * 3, 0.5f);
-	toOut.assign(3 * 3, 0.5f);
+	//Set Each Layer Weights
+	toL1.resize(3 * 3);
+	toL2.resize(3 * 3);
+	toL3.resize(3 * 3);
+	toOut.resize(3 * 3);
+	for (int i = 0; i < toL1.size(); i++) {
+		toL1[i] = weightRange(weightGenerator);
+	}
+	for (int i = 0; i < toL2.size(); i++) {
+		toL2[i] = weightRange(weightGenerator);
+	}
+	for (int i = 0; i < toL3.size(); i++) {
+		toL3[i] = weightRange(weightGenerator);
+	}
+	for (int i = 0; i < toOut.size(); i++) {
+		toOut[i] = weightRange(weightGenerator);
+	}
+	//Set Bias for Each Button
+	buttonBias.assign(8 * 3, weightRange(weightGenerator));
+	//Forward Bias
+	buttonBias[0] += 0.1;
+	//Forward and Left Bias
+	buttonBias[1] += 0.09;
+	//Forward and Left Power Slide Bias
+	buttonBias[10] += 0.081;
+	//Backward Bias
+	buttonBias[18] -= 0.081 * 0.9;
 }
 
 //private methods
@@ -94,7 +116,7 @@ void theMatrix::convertTo4() {
 void theMatrix::convertTo3() {
 	for (int rowOf83 = 0; rowOf83 < 8; rowOf83++) {
 		for (int colOf3 = 0; colOf3 < 3; colOf3++) {
-			float sum = 0.0f; //Could Have Bias For Whole Layer, Might Add as Variable Later
+			float sum = buttonBias[rowOf83 * 3 + colOf3]; //Add Bias For Specific Buttons
 			int startRow = rowOf83 - 1; //Number of Rows Doesn't Change
 			int startCol = colOf3;		//Gemini said no - 1
 			for (int extractorRow = 0; extractorRow < 3; extractorRow++) {
@@ -134,4 +156,60 @@ int theMatrix::process(const vector<float>& screen) {
 	convertTo4();
 	convertTo3();
 	return choice();
+}
+
+void theMatrix::updateWeights(int primary, double secondary) {}
+
+string theMatrix::getBiasWeights() {
+	string result = "\nLayer 1: ";
+	for (int i = 0; i < toL1.size(); i++) {
+		result += to_string(toL1[i]);
+		if (i < toL1.size() - 1) {
+			result += ", ";
+		}
+		else {
+			result += "\n";
+		}
+	}
+	result += "Layer 2: ";
+	for (int i = 0; i < toL2.size(); i++) {
+		result += to_string(toL2[i]);
+		if (i < toL2.size() - 1) {
+			result += ", ";
+		}
+		else {
+			result += "\n";
+		}
+	}
+	result += "Layer 3: ";
+	for (int i = 0; i < toL3.size(); i++) {
+		result += to_string(toL3[i]);
+		if (i < toL3.size() - 1) {
+			result += ", ";
+		}
+		else {
+			result += "\n";
+		}
+	}
+	result += "Out Layer: ";
+	for (int i = 0; i < toOut.size(); i++) {
+		result += to_string(toOut[i]);
+		if (i < toOut.size() - 1) {
+			result += ", ";
+		}
+		else {
+			result += "\n";
+		}
+	}
+	result += "Button Bias: ";
+	for (int i = 0; i < buttonBias.size(); i++) {
+		result += to_string(buttonBias[i]);
+		if (i < buttonBias.size() - 1) {
+			result += ", ";
+		}
+		else {
+			result += "\n";
+		}
+	}
+	return result;
 }

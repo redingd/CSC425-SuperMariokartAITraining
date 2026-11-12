@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdint> //For uint8_t type
+#include <string>
 
 #include "scoring.h"
 #include "theMatrix.h"
@@ -16,10 +17,6 @@ private:
 	theMatrix myNueralNetwork = theMatrix();
 	scoring myScore = scoring(); //may need to change to public, depends on if we can put the logic in ai or not
 
-	//For Feedback Updating
-	bool updateFeedFlag = false;
-	int scoreChange = 0;
-	double scoringAsecond = 0;
 
 	//0 = Main Menu When First Starting, 127 = Opening of Race, 133 = End of Race
 	int raceState = 0;
@@ -46,6 +43,6 @@ public:
 	void raceReset(uint8_t*);
 	void aiFeedback(uint8_t*); //Gemini mentioned
 	bool endMe();
-
+	std::string getPrintOut();
 
 };

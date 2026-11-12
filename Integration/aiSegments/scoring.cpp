@@ -43,7 +43,7 @@ void scoring::spunOut() {
 
 void scoring::checkPointCrossing(int many) {
     if (many < 0) {
-        score -= 9;
+        score -= 11;
     }
     /* For Shortcuts
     else if (many > 1) {

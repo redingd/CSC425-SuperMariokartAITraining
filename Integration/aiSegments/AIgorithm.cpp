@@ -126,9 +126,7 @@ void AIgorithm::aiFeedback(uint8_t* timer) {
 		cout << "I'm AI " << numInRun <<
 			" and my current score is: " << myScore.getScore() << "\t and scoring/second is: " << scorePerSec << endl;
 	}
-	updateFeedFlag = true;
-	scoreChange = howsGoin;
-	scoringAsecond = scorePerSec;
+	myNueralNetwork.updateWeights(howsGoin, scorePerSec);
 }
 
 bool AIgorithm::endMe() {
@@ -140,7 +138,14 @@ bool AIgorithm::endMe() {
 			cout << "I'm AI " << numInRun <<
 				"and I took too long" << endl;
 		}
+		cout << getPrintOut() << endl;
 		return true;
 	}
 	return false;
+}
+
+string AIgorithm::getPrintOut() {
+	string printMe = "Final Score: " + to_string(myScore.getScore());
+	printMe += "\nFinal Weights and Bias: " + myNueralNetwork.getBiasWeights();
+	return printMe;
 }
