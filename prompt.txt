@@ -1,6 +1,7 @@
 I am coding my own ai using cpp
 i am coding in visual studio 2022
 the ai will play super mariokart
+the ai will "learn" through reinforcement learning
 it will do this using libretro and snes9x
 i am working in my own project in the snes9xw.sln from the snes9x github
 
