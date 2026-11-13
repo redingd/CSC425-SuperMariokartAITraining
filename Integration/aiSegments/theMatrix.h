@@ -35,7 +35,7 @@ private:
 
 
 	float changeRate = 0.00001; //How Much the AI changes Weights and Bias
-	float buttonBiasSize = 0.0001; //Keep the Bias for Buttons Low
+	float buttonBiasMax = 0.0001; //Keep the Bias for Buttons Low
 
 
 	std::vector<int> recentSelectionHistory;

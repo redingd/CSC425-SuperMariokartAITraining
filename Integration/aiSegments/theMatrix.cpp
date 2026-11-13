@@ -17,7 +17,7 @@ theMatrix::theMatrix() {
 	toL2.resize(3 * 3);
 	toL3.resize(3 * 3);
 	toOut.resize(3 * 3);
-	for (int i = 0; i < toL1.size(); i++) {
+	for (int i = 0; i < toL1.size(); i++) { //Change these to iterators
 		toL1[i] = weightRange(weightGenerator);
 	}
 	for (int i = 0; i < toL2.size(); i++) {
@@ -30,18 +30,18 @@ theMatrix::theMatrix() {
 		toOut[i] = weightRange(weightGenerator);
 	}
 	//Set Bias for Each Button
-	buttonBias.assign(8 * 3, weightRange(weightGenerator) * buttonBiasSize);
+	buttonBias.assign(8 * 3, weightRange(weightGenerator) * buttonBiasMax);
 	//Forward Bias
-	buttonBias[0] += 0.1 * buttonBiasSize;
+	buttonBias[0] += 0.1 * buttonBiasMax;
 	//Forward and Left Bias
-	buttonBias[1] += 0.09 * buttonBiasSize;
+	buttonBias[1] += 0.09 * buttonBiasMax;
 	//Forward and Left Power Slide Bias
-	buttonBias[10] += 0.081 * buttonBiasSize;
+	buttonBias[10] += 0.081 * buttonBiasMax;
 	//Backward Bias
-	buttonBias[18] -= 0.081 * 0.9 * buttonBiasSize;
+	buttonBias[18] -= 0.081 * 0.9 * buttonBiasMax;
 }
 
-void theMatrix::vectorUpdateWeights(vector<float>& thisMatrix, float rate, int ranEle) {
+void theMatrix::vectorUpdateWeights(vector<float>& thisMatrix, float rate, int ranEle) { //Change it to use an Iterator
 	for (int i = 0; i < thisMatrix.size(); i++) {
 		float change = 0.0;
 		if (thisMatrix[i] < 0) {
@@ -201,13 +201,6 @@ int theMatrix::process(const vector<float>& screen) {
 
 void theMatrix::updateWeights(int primary, double secondary) {
 	float reinforcementRate = (float) secondary / 10;
-	int selectionCount[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	if (recentSelectionHistory.empty()) {}
-	else {
-		for (auto it = recentSelectionHistory.begin(); it != recentSelectionHistory.end(); ++it) {
-			selectionCount[*it]++;
-		}
-	}
 	if (primary > 0) { //Reinforce Learning
 		vectorUpdateWeights(toL1, reinforcementRate, 1);
 		vectorUpdateWeights(toL2, reinforcementRate, 1);
@@ -225,6 +218,26 @@ void theMatrix::updateWeights(int primary, double secondary) {
 		vectorUpdateWeights(toL2, reinforcementRate, 0);
 		vectorUpdateWeights(toL3, reinforcementRate, 0);
 		vectorUpdateWeights(toOut, reinforcementRate, 0);
+	}
+	//Reinforce or Uninforce Button Bias
+	if (primary != 0) {
+		int selectionCount[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		if (recentSelectionHistory.empty()) {}
+		else {
+			for (auto it = recentSelectionHistory.begin(); it != recentSelectionHistory.end(); ++it) {
+				selectionCount[*it]++;
+			}
+		}
+		for (int i = 0; i < min(size(selectionCount), buttonBias.size()); i++) {
+			float inforcement = (((float)primary * (float) selectionCount[i]) / 300.0) * buttonBiasMax;
+			buttonBias[i] += inforcement;
+			if (buttonBias[i] > 5.0 * buttonBiasMax) {
+				buttonBias[i] = 5.0 * buttonBiasMax;
+			}
+			else if (buttonBias[i] < -5.0 * buttonBiasMax) {
+				buttonBias[i] = -5.0 * buttonBiasMax;
+			}
+		}
 	}
 	//Reset Selection History
 	recentSelectionHistory.clear();
