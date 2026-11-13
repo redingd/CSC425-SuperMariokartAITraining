@@ -29,6 +29,7 @@ libretroAccess* libretroAccess::instance = nullptr;
 
 libretroAccess::libretroAccess() {
     instance = this;
+    instance->latestPixelState.resize(32 * 32, 0.0f); //Sizes the AI's Window
 }
 
 libretroAccess::~libretroAccess() {
@@ -109,8 +110,7 @@ bool libretroAccess::env_cb(unsigned cmd, void* data) {
 void libretroAccess::video_cb(const void* data, unsigned width, unsigned height, size_t pitch) {
     // If video wasn't initialized (running headlessly), or data is missing, skip rendering
     // FIX: Only check data, instance, and renderer here. Allow texture to be null so it can be created!
-    if (!data || !instance || !instance->renderer) {
-        std::cout << "[DEBUG] video_cb skipped (null pointer)!\n";
+    if (!data || !instance) {
         return;
     }
 
@@ -120,7 +120,6 @@ void libretroAccess::video_cb(const void* data, unsigned width, unsigned height,
 
     int targetW = 32;
     int targetH = 32;
-    instance->latestPixelState.resize(targetW * targetH);
 
     for (int y = 0; y < targetH; ++y) {
         int srcY = (y * height) / targetH;
@@ -137,6 +136,11 @@ void libretroAccess::video_cb(const void* data, unsigned width, unsigned height,
         }
     }
     // -----------------------------------------------------------------
+    
+    // --- 2. ONLY render with SDL if the renderer was initialized ---
+    if (!instance->renderer) {
+        return; // Headless mode: skip SDL window drawing
+    }
 
     // Diagnostic: Scan the first few rows to see if there's *any* non-zero data
     const uint16_t* pixels = static_cast<const uint16_t*>(data);
