@@ -34,7 +34,6 @@ private:
 	std::uniform_real_distribution<float> weightRange{ -0.5, 0.5 };
 
 
-	float changeRate = 0.00001; //How Much the AI changes Weights and Bias
 	float buttonBiasMax = 0.0001; //Keep the Bias for Buttons Low
 
 

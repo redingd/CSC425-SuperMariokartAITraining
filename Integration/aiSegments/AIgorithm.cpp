@@ -120,11 +120,11 @@ void AIgorithm::aiFeedback(uint8_t* timer) {
 	}
 	double scorePerSec = (double) (myScore.getScore() - prevRaceScore) / (double) elapsedSec;
 	if (single) {
-		cout << "AIgorithm Score: " << myScore.getScore() << "\t Scoring/Second: " << scorePerSec << endl;
+		cout << "AIgorithm Score: " << myScore.getScore() << "\t Scoring/Second: " << scorePerSec << "\n";
 	}
 	else {
 		cout << "I'm AI " << numInRun <<
-			" and my current score is: " << myScore.getScore() << "\t and scoring/second is: " << scorePerSec << endl;
+			" and my current score is: " << myScore.getScore() << "\t and scoring/second is: " << scorePerSec << "\n";
 	}
 	myNueralNetwork.updateWeights(howsGoin, scorePerSec);
 }

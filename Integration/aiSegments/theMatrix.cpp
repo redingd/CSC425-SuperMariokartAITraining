@@ -30,31 +30,33 @@ theMatrix::theMatrix() {
 }
 
 void theMatrix::vectorUpdateWeights(vector<float>& thisMatrix, float rate, int ranEle) {
-	for (auto it = recentSelectionHistory.begin(); it != recentSelectionHistory.end(); ++it) {
+	for (auto it = thisMatrix.begin(); it != thisMatrix.end(); ++it) {
+		float rand = weightRange(weightGenerator);
 		float change = 0.0;
 		if (*it < 0) {
-			float rand = weightRange(weightGenerator);
 			if (ranEle > 0) {
 				change -= rate;
 			}
 			else if (ranEle < 0) {
-				change += rate * rand / 10;
+				change += rate * rand / 100;
 			}
 			else {
-				change -= rand / 100;
+				change -= rand / 1000;
 			}
 		}
-		else {
-			float rand = weightRange(weightGenerator);
-			if (*it > 0) {
+		else if (*it > 0) {
+			if (ranEle > 0) {
 				change += rate;
 			}
 			else if (ranEle < 0) {
 				change -= rate * rand / 100;
 			}
 			else {
-				change += rand / 10000;
+				change += rand / 1000;
 			}
+		}
+		else {
+			change += rand / 1000;
 		}
 		*it += change;
 		if (*it > 5.0) {
@@ -188,7 +190,7 @@ int theMatrix::process(const vector<float>& screen) {
 }
 
 void theMatrix::updateWeights(int primary, double secondary) {
-	float reinforcementRate = (float) secondary / 10;
+	float reinforcementRate = (float) secondary / 100;
 	if (primary > 0) { //Reinforce Learning
 		vectorUpdateWeights(toL1, reinforcementRate, 1);
 		vectorUpdateWeights(toL2, reinforcementRate, 1);
