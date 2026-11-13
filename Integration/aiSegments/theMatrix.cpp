@@ -13,24 +13,12 @@ theMatrix::theMatrix() {
 	layer3.assign(8 * 4, 0.0f);
 	outputControl.assign(8 * 3, 0.0f);
 	//Set Each Layer Weights
-	toL1.resize(3 * 3);
-	toL2.resize(3 * 3);
-	toL3.resize(3 * 3);
-	toOut.resize(3 * 3);
-	for (int i = 0; i < toL1.size(); i++) { //Change these to iterators
-		toL1[i] = weightRange(weightGenerator);
-	}
-	for (int i = 0; i < toL2.size(); i++) {
-		toL2[i] = weightRange(weightGenerator);
-	}
-	for (int i = 0; i < toL3.size(); i++) {
-		toL3[i] = weightRange(weightGenerator);
-	}
-	for (int i = 0; i < toOut.size(); i++) {
-		toOut[i] = weightRange(weightGenerator);
-	}
+	toL1.assign(3 * 3, 0.1);
+	toL2.assign(3 * 3, 0.1);
+	toL3.assign(3 * 3, 0.1);
+	toOut.assign(3 * 3, 0.1);
 	//Set Bias for Each Button
-	buttonBias.assign(8 * 3, weightRange(weightGenerator) * buttonBiasMax);
+	buttonBias.assign(8 * 3, 0.0f);
 	//Forward Bias
 	buttonBias[0] += 0.1 * buttonBiasMax;
 	//Forward and Left Bias
@@ -41,10 +29,10 @@ theMatrix::theMatrix() {
 	buttonBias[18] -= 0.081 * 0.9 * buttonBiasMax;
 }
 
-void theMatrix::vectorUpdateWeights(vector<float>& thisMatrix, float rate, int ranEle) { //Change it to use an Iterator
-	for (int i = 0; i < thisMatrix.size(); i++) {
+void theMatrix::vectorUpdateWeights(vector<float>& thisMatrix, float rate, int ranEle) {
+	for (auto it = recentSelectionHistory.begin(); it != recentSelectionHistory.end(); ++it) {
 		float change = 0.0;
-		if (thisMatrix[i] < 0) {
+		if (*it < 0) {
 			float rand = weightRange(weightGenerator);
 			if (ranEle > 0) {
 				change -= rate;
@@ -58,7 +46,7 @@ void theMatrix::vectorUpdateWeights(vector<float>& thisMatrix, float rate, int r
 		}
 		else {
 			float rand = weightRange(weightGenerator);
-			if (ranEle > 0) {
+			if (*it > 0) {
 				change += rate;
 			}
 			else if (ranEle < 0) {
@@ -68,12 +56,12 @@ void theMatrix::vectorUpdateWeights(vector<float>& thisMatrix, float rate, int r
 				change += rand / 10000;
 			}
 		}
-		thisMatrix[i] += change;
-		if (thisMatrix[i] > 5.0) {
-			thisMatrix[i] = 5.0;
+		*it += change;
+		if (*it > 5.0) {
+			*it = 5.0;
 		}
-		else if (thisMatrix[i] < -5.0) {
-			thisMatrix[i] = -5.0;
+		else if (*it < -5.0) {
+			*it = -5.0;
 		}
 	}
 }
@@ -229,7 +217,7 @@ void theMatrix::updateWeights(int primary, double secondary) {
 			}
 		}
 		for (int i = 0; i < min(size(selectionCount), buttonBias.size()); i++) {
-			float inforcement = (((float)primary * (float) selectionCount[i]) / 300.0) * buttonBiasMax;
+			float inforcement = (((float)primary * (float) selectionCount[i]) / 3000.0) * buttonBiasMax;
 			buttonBias[i] += inforcement;
 			if (buttonBias[i] > 5.0 * buttonBiasMax) {
 				buttonBias[i] = 5.0 * buttonBiasMax;
