@@ -7,6 +7,7 @@ private:
 
     int score; //Current Score
     int prevCheck; //Score when last checked by AI
+    int pastPoints; //For Movement In Standings
 
 
 public:
@@ -20,13 +21,17 @@ public:
     void lostCoin();
     //void pickedItem();
     //void usedItem();
-    void hitByItem();
     void fellOffMap();
-    void spunOut();
+    void spunOut(); //Any Version of Spinning Out
+    //void terrain(int); //Requires score to be a double
 
     void checkPointCrossing(int);
     void completedLap(int);
-    //void completedRace(unknownType);
+    //void completedRace();
+    //Call if Failed a Race (Does Not Affect Current Run Learning)
+    //void failedRace();
+    //Call if Passed a Race (Does Not Affect Current Run Learning)
+    void overallStandings(int);
 
     void collision();
 
