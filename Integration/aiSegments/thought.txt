@@ -1,0 +1,2 @@
+the AIgorithm could have multiple matrix objects, and create a new one for each race it's in
+This would allow for easier expansion, esoecially since the matrix is a class file
